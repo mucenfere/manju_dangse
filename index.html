@@ -1,1 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YWD860LFFR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YWD860LFFR');
+</script>
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청대 당안 열람실</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=IM+Fell+English:ital@0;1&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #f7f8fa;
+    --paper:        #ffffff;
+    --ink:          #1a1e2e;
+    --ink-mid:      #3a3f52;
+    --ink-light:    #7a8099;
+    --accent:       #8b2e0f;
+    --accent-warm:  #c4520a;
+    --gold:         #b8912a;
+    --border:       #d4d8e2;
+    --border-light: #e8eaf0;
+    --private-bg:   #2c3150;
+    --shared-bg:    #1a3d2c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Serif KR', serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    padding: 36px 48px 28px;
+    border-bottom: 3px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 60px,
+        rgba(255,255,255,0.015) 60px,
+        rgba(255,255,255,0.015) 61px
+      );
+    pointer-events: none;
+  }
+
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .site-label {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #f5edd8;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  h1 em {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--gold);
+    display: block;
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  .header-desc {
+    font-size: 0.82rem;
+    color: #9a8a70;
+    margin-top: 14px;
+    line-height: 1.8;
+    max-width: 540px;
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 48px 80px;
+  }
+
+  .section-label {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* ── COLLECTION CARDS ── */
+  .collections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 0;
+  }
+
+  .collection-card {
+    border-radius: 4px;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+
+  .collection-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  }
+
+  .card-header {
+    padding: 28px 28px 20px;
+    position: relative;
+  }
+
+  .card-private .card-header { background: var(--private-bg); }
+  .card-shared  .card-header { background: var(--shared-bg); }
+
+  .card-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-bottom: 14px;
+    font-family: 'IM Fell English', serif;
+  }
+
+  .card-private .card-badge {
+    background: rgba(139,46,15,0.3);
+    color: #e8a080;
+    border: 1px solid rgba(139,46,15,0.5);
+  }
+
+  .card-shared .card-badge {
+    background: rgba(40,120,70,0.3);
+    color: #80c8a0;
+    border: 1px solid rgba(40,120,70,0.5);
+  }
+
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f0e8d4;
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+
+  .card-title-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.85rem;
+    color: #7a7060;
+    margin-bottom: 0;
+  }
+
+  .card-body {
+    padding: 20px 28px 24px;
+    background: var(--paper);
+    border: 1px solid var(--border-light);
+    border-top: none;
+  }
+
+  .card-desc {
+    font-size: 0.8rem;
+    color: var(--ink-light);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .card-stats {
+    display: flex;
+    gap: 20px;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.4rem;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.68rem;
+    color: var(--ink-light);
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+
+  .card-arrow {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+  }
+
+
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 0.72rem;
+    color: var(--border);
+    border-top: 1px solid var(--border-light);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  header        { animation: fadeUp 0.5s ease both; }
+  .collections  { animation: fadeUp 0.5s 0.1s ease both; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+
+    <h1>
+      청대 당안 문건 열람실
+      <em>Qing Historical Document Archive</em>
+    </h1>
+    <p class="header-desc">
+      제1역사당안관 소장 및 영인 출판된 청대 만한문 당안 자료의 원문·번역 열람 시스템입니다.<br>
+      문건을 선택하면 원문과 한국어 번역을 좌우 분할 화면으로 열람할 수 있습니다.
+    </p>
+  </div>
+</header>
+
+<main>
+
+  <!-- 컬렉션 카드 -->
+  <p class="section-label">Collections · 컬렉션</p>
+  <div class="collections">
+
+    <a class="collection-card card-private" href="collection.html?col=archive">
+      <div class="card-header">
+        <span class="card-badge">🔒 비공개</span>
+        <div class="card-title">제1역사당안관 소장 당안</div>
+        <div class="card-title-cn">第一歷史檔案館藏清代檔案</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">중국 제1역사당안관 소장 미출판 원사료. 만·한문 주접, 제본 등 수록.</p>
+        <div class="card-stats">
+          <div class="stat">
+            <span class="stat-num" id="count-archive">—</span>
+            <span class="stat-label">문건</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num" id="translated-archive">—</span>
+            <span class="stat-label">번역 완료</span>
+          </div>
+        </div>
+        <span class="card-arrow">열람하기 →</span>
+      </div>
+    </a>
+
+    <a class="collection-card card-shared" href="collection.html?col=published">
+      <div class="card-header">
+        <span class="card-badge">👥 제한 공유</span>
+        <div class="card-title">영인 출판 당안 자료</div>
+        <div class="card-title-cn">影印出版清代檔案</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">기출판 영인본 수록 당안 자료.</p>
+        <div class="card-stats">
+          <div class="stat">
+            <span class="stat-num" id="count-published">—</span>
+            <span class="stat-label">문건</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num" id="translated-published">—</span>
+            <span class="stat-label">번역 완료</span>
+          </div>
+        </div>
+        <span class="card-arrow">열람하기 →</span>
+      </div>
+    </a>
+
+  </div>
+
+
+
+</main>
+
+<footer>
+  mucenfere 당안 열람실 · Personal Historical Archive · 私人檔案閱覽室
+</footer>
+
+<script>
+// 샘플 데이터 — 나중에 GitHub API에서 불러오는 방식으로 교체
+const sampleDocs = [
+  {
+    id: 'ARC-001',
+    collection: 'archive',
+    title: '흠차대신 주접',
+    author: '奕山',
+    date: '道光 21年 5月',
+    lang: 'chinese',
+    translated: true
+  },
+  {
+    id: 'ARC-002',
+    collection: 'archive',
+    title: '광동 군사 보고',
+    author: '琦善',
+    date: '道光 20年 11月',
+    lang: 'manchu',
+    translated: true
+  },
+  {
+    id: 'ARC-003',
+    collection: 'archive',
+    title: '해방 관련 주접',
+    author: '裕謙',
+    date: '道光 21年 7月',
+    lang: 'manchu',
+    translated: false
+  },
+  {
+    id: 'PUB-001',
+    collection: 'published',
+    title: '아편 몰수 보고',
+    author: '林則徐',
+    date: '道光 19年 4月',
+    lang: 'chinese',
+    translated: true
+  },
+  {
+    id: 'PUB-002',
+    collection: 'published',
+    title: '천진 교섭 경과',
+    author: '琦善',
+    date: '道光 20年 8月',
+    lang: 'chinese',
+    translated: false
+  },
+];
+
+// 통계 계산
+function calcStats(col) {
+  const docs = sampleDocs.filter(d => d.collection === col);
+  return {
+    total: docs.length,
+    translated: docs.filter(d => d.translated).length
+  };
+}
+
+function renderStats() {
+  const a = calcStats('archive');
+  const p = calcStats('published');
+  document.getElementById('count-archive').textContent = a.total;
+  document.getElementById('translated-archive').textContent = a.translated;
+  document.getElementById('count-published').textContent = p.total;
+  document.getElementById('translated-published').textContent = p.translated;
+}
+
+renderStats();
+</script>
+
+</body>
+</html>
