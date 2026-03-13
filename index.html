@@ -69,15 +69,6 @@
     position: relative;
   }
 
-  .site-label {
-    font-family: 'IM Fell English', serif;
-    font-size: 0.72rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 10px;
-  }
-
   h1 {
     font-family: 'Noto Serif KR', serif;
     font-size: 2rem;
@@ -238,8 +229,6 @@
     font-style: italic;
   }
 
-
-
   /* ── FOOTER ── */
   footer {
     text-align: center;
@@ -265,7 +254,6 @@
 
 <header>
   <div class="header-inner">
-
     <h1>
       청대 당안 문건 열람실
       <em>Qing Historical Document Archive</em>
@@ -293,11 +281,11 @@
         <p class="card-desc">중국 제1역사당안관 소장 미출판 원사료. 만·한문 주접, 제본 등 수록.</p>
         <div class="card-stats">
           <div class="stat">
-            <span class="stat-num" id="count-archive">—</span>
+            <span class="stat-num">—</span>
             <span class="stat-label">문건</span>
           </div>
           <div class="stat">
-            <span class="stat-num" id="translated-archive">—</span>
+            <span class="stat-num">—</span>
             <span class="stat-label">번역 완료</span>
           </div>
         </div>
@@ -315,11 +303,11 @@
         <p class="card-desc">기출판 영인본 수록 당안 자료.</p>
         <div class="card-stats">
           <div class="stat">
-            <span class="stat-num" id="count-published">—</span>
+            <span class="stat-num">—</span>
             <span class="stat-label">문건</span>
           </div>
           <div class="stat">
-            <span class="stat-num" id="translated-published">—</span>
+            <span class="stat-num">—</span>
             <span class="stat-label">번역 완료</span>
           </div>
         </div>
@@ -329,84 +317,11 @@
 
   </div>
 
-
-
 </main>
 
 <footer>
   mucenfere 당안 열람실 · Personal Historical Archive · 私人檔案閱覽室
 </footer>
-
-<script>
-// 샘플 데이터 — 나중에 GitHub API에서 불러오는 방식으로 교체
-const sampleDocs = [
-  {
-    id: 'ARC-001',
-    collection: 'archive',
-    title: '흠차대신 주접',
-    author: '奕山',
-    date: '道光 21年 5月',
-    lang: 'chinese',
-    translated: true
-  },
-  {
-    id: 'ARC-002',
-    collection: 'archive',
-    title: '광동 군사 보고',
-    author: '琦善',
-    date: '道光 20年 11月',
-    lang: 'manchu',
-    translated: true
-  },
-  {
-    id: 'ARC-003',
-    collection: 'archive',
-    title: '해방 관련 주접',
-    author: '裕謙',
-    date: '道光 21年 7月',
-    lang: 'manchu',
-    translated: false
-  },
-  {
-    id: 'PUB-001',
-    collection: 'published',
-    title: '아편 몰수 보고',
-    author: '林則徐',
-    date: '道光 19年 4月',
-    lang: 'chinese',
-    translated: true
-  },
-  {
-    id: 'PUB-002',
-    collection: 'published',
-    title: '천진 교섭 경과',
-    author: '琦善',
-    date: '道光 20年 8月',
-    lang: 'chinese',
-    translated: false
-  },
-];
-
-// 통계 계산
-function calcStats(col) {
-  const docs = sampleDocs.filter(d => d.collection === col);
-  return {
-    total: docs.length,
-    translated: docs.filter(d => d.translated).length
-  };
-}
-
-function renderStats() {
-  const a = calcStats('archive');
-  const p = calcStats('published');
-  document.getElementById('count-archive').textContent = a.total;
-  document.getElementById('translated-archive').textContent = a.translated;
-  document.getElementById('count-published').textContent = p.total;
-  document.getElementById('translated-published').textContent = p.translated;
-}
-
-renderStats();
-</script>
 
 </body>
 </html>
