@@ -26,8 +26,8 @@
     --gold:         #b8912a;
     --border:       #d4d8e2;
     --border-light: #e8eaf0;
-    --private-bg:   #2c3150;
-    --shared-bg:    #1a3d2c;
+    --private-bg:   #7a5c3e;
+    --shared-bg:    #5a4a38;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -126,14 +126,15 @@
     border-radius: 4px;
     overflow: hidden;
     text-decoration: none;
-    display: block;
+    display: flex;
+    flex-direction: column;
     transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   }
 
   .collection-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   }
 
   .card-header {
@@ -156,21 +157,21 @@
   }
 
   .card-private .card-badge {
-    background: rgba(139,46,15,0.3);
-    color: #e8a080;
-    border: 1px solid rgba(139,46,15,0.5);
+    background: rgba(255,255,255,0.15);
+    color: #f0e0cc;
+    border: 1px solid rgba(255,255,255,0.25);
   }
 
   .card-shared .card-badge {
-    background: rgba(40,120,70,0.3);
-    color: #80c8a0;
-    border: 1px solid rgba(40,120,70,0.5);
+    background: rgba(255,255,255,0.15);
+    color: #f0e0cc;
+    border: 1px solid rgba(255,255,255,0.25);
   }
 
   .card-title {
     font-size: 1.05rem;
     font-weight: 600;
-    color: #f0e8d4;
+    color: #f5ede0;
     line-height: 1.5;
     margin-bottom: 6px;
   }
@@ -178,7 +179,7 @@
   .card-title-cn {
     font-family: 'Noto Serif SC', serif;
     font-size: 0.85rem;
-    color: #7a7060;
+    color: #c8b898;
     margin-bottom: 0;
   }
 
@@ -187,6 +188,7 @@
     background: var(--paper);
     border: 1px solid var(--border-light);
     border-top: none;
+    flex: 1;
   }
 
   .card-desc {
@@ -278,11 +280,11 @@
         <div class="card-title-cn">第一歷史檔案館藏清代檔案</div>
       </div>
       <div class="card-body">
-        <p class="card-desc">중국 제1역사당안관 소장 미출판 만·한문 주접, 제본 등 수록. 원문은 비공개하며 당안 번호와 제목만 제공됩니다.</p>
+        <p class="card-desc">중국 제1역사당안관 소장 미출판 만·한문 주접, 제본 등 수록. 당안 번호와 제목만 제공됩니다.</p>
         <div class="card-stats">
           <div class="stat">
             <span class="stat-num">—</span>
-            <span class="stat-label">문건</span>
+            <span class="stat-label">문건수</span>
           </div>
           <div class="stat">
             <span class="stat-num">—</span>
@@ -300,11 +302,11 @@
         <div class="card-title-cn">影印出版清代檔案</div>
       </div>
       <div class="card-body">
-        <p class="card-desc">공개 출판된 당안 자료.</p>
+        <p class="card-desc">온라인 게재 혹은 영인 출판된 당안 자료. </p>
         <div class="card-stats">
           <div class="stat">
             <span class="stat-num">—</span>
-            <span class="stat-label">문건</span>
+            <span class="stat-label">문건수</span>
           </div>
           <div class="stat">
             <span class="stat-num">—</span>
