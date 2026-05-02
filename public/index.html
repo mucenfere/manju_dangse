@@ -26,8 +26,6 @@
     --gold:         #b8912a;
     --border:       #d4d8e2;
     --border-light: #e8eaf0;
-    --private-bg:   #7a5c3e;
-    --shared-bg:    #5a4a38;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -143,8 +141,8 @@
     position: relative;
   }
 
-  .card-private .card-header { background: var(--private-bg); }
-  .card-shared  .card-header { background: var(--shared-bg); }
+  .card-archive   .card-header { background: #6a5040; }
+  .card-published .card-header { background: #6a5040; }
 
   .card-badge {
     display: inline-block;
@@ -157,13 +155,8 @@
     font-family: 'IM Fell English', serif;
   }
 
-  .card-private .card-badge {
-    background: rgba(255,255,255,0.15);
-    color: #f0e0cc;
-    border: 1px solid rgba(255,255,255,0.25);
-  }
-
-  .card-shared .card-badge {
+  .card-archive .card-badge,
+  .card-published .card-badge {
     background: rgba(255,255,255,0.15);
     color: #f0e0cc;
     border: 1px solid rgba(255,255,255,0.25);
@@ -422,12 +415,12 @@
 <main>
 
   <!-- 컬렉션 카드 -->
-  <p class="section-label">Collections · 컬렉션</p>
+  <p class="section-label">Collections · 당안 컬렉션</p>
   <div class="collections">
 
-    <a class="collection-card card-private" href="collection.html?col=archive">
+    <a class="collection-card card-archive" href="archive/collection.html">
       <div class="card-header">
-        <span class="card-badge">🔒 비공개</span>
+        <span class="card-badge">第一歷史檔案館</span>
         <div class="card-title">제1역사당안관 소장 당안</div>
         <div class="card-title-cn">第一歷史檔案館藏清代檔案</div>
       </div>
@@ -447,9 +440,9 @@
       </div>
     </a>
 
-    <a class="collection-card card-shared" href="collection.html?col=published">
+    <a class="collection-card card-published" href="published/collection.html">
       <div class="card-header">
-        <span class="card-badge">👥 제한 공유</span>
+        <span class="card-badge">影印出版</span>
         <div class="card-title">영인 출판 당안 자료</div>
         <div class="card-title-cn">影印出版清代檔案</div>
       </div>
