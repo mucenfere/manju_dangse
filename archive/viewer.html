@@ -574,6 +574,8 @@ async function saveDoc() {
     );
     isModified = false;
     setStatus('saved', '자동저장 완료 · ' + new Date().toLocaleTimeString('ko-KR'));
+    // search-index.json 업데이트 (비동기, 실패해도 무시)
+    updateSearchIndex(docId, originalText, translationText).catch(() => {});
   } catch(e) {
     setStatus('error', '저장 실패 — ' + e.message);
   } finally {
@@ -612,6 +614,42 @@ async function ghPut(path, content, message, sha) {
 
   const result = await res.json();
   if (currentDoc) currentDoc._sha = result.content?.sha;
+}
+
+// ── Search Index 업데이트 ──────────────────────────────
+async function updateSearchIndex(docId, original, translation) {
+  const cfg = ghConfig();
+  const path = `data/${currentCol}/search-index.json`;
+  const url  = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+  const headers = { 'Authorization': `token ${cfg.token}`, 'Content-Type': 'application/json' };
+
+  // 기존 search-index 로드
+  let index = [];
+  let sha;
+  try {
+    const r = await fetch(url, { headers });
+    if (r.ok) {
+      const d = await r.json();
+      sha = d.sha;
+      const raw = Uint8Array.from(atob(d.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+      index = JSON.parse(new TextDecoder('utf-8').decode(raw));
+    }
+  } catch(e) {}
+
+  // 해당 문건 항목 업데이트 or 추가
+  const entry = { id: docId, text: original + '\n' + translation };
+  const idx = index.findIndex(e => e.id === docId);
+  if (idx !== -1) index[idx] = entry;
+  else index.push(entry);
+
+  // 저장
+  const body = {
+    message: `Update search-index: ${docId}`,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(index)))),
+    branch: cfg.branch,
+  };
+  if (sha) body.sha = sha;
+  await fetch(url, { method: 'PUT', headers, body: JSON.stringify(body) });
 }
 
 // ── 변경 감지 ──────────────────────────────────────────
