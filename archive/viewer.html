@@ -577,7 +577,32 @@ async function saveDoc() {
     // search-index.json 업데이트 (비동기, 실패해도 무시)
     updateSearchIndex(docId, originalText, translationText).catch(() => {});
   } catch(e) {
-    setStatus('error', '저장 실패 — ' + e.message);
+    // SHA 불일치 오류면 SHA 갱신 후 재시도
+    if (e.message && e.message.includes('does not match')) {
+      try {
+        setStatus('saving', 'SHA 갱신 후 재시도 중…');
+        const cfg2 = ghConfig();
+        const url2 = `https://api.github.com/repos/${cfg2.owner}/${cfg2.repo}/contents/data/${currentCol}/${filename}`;
+        const r = await fetch(url2, { headers: { 'Authorization': `token ${cfg2.token}` } });
+        if (r.ok) {
+          const d = await r.json();
+          if (currentDoc) currentDoc._sha = d.sha;
+          await ghPut(
+            `data/${currentCol}/${filename}`,
+            JSON.stringify(newContent, null, 2),
+            `Update ${docId}`,
+            d.sha
+          );
+          isModified = false;
+          setStatus('saved', '자동저장 완료 · ' + new Date().toLocaleTimeString('ko-KR'));
+          updateSearchIndex(docId, originalText, translationText).catch(() => {});
+        }
+      } catch(e2) {
+        setStatus('error', '저장 실패 — ' + e2.message);
+      }
+    } else {
+      setStatus('error', '저장 실패 — ' + e.message);
+    }
   } finally {
     isSaving = false;
   }
