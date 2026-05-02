@@ -234,6 +234,33 @@
     font-style: italic;
   }
 
+  /* ── 페이지 태그 ── */
+  .page-tag {
+    display: inline-block;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.82em;
+    color: var(--gold);
+    background: rgba(184,145,42,0.08);
+    border: 1px solid rgba(184,145,42,0.25);
+    border-radius: 3px;
+    padding: 1px 7px;
+    margin-right: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    vertical-align: middle;
+  }
+  .page-tag:hover {
+    background: rgba(184,145,42,0.22);
+    border-color: var(--gold);
+    color: #8b6a0f;
+  }
+  .page-tag.highlight {
+    background: var(--gold);
+    color: white;
+    border-color: var(--gold);
+  }
+
   /* ── DIVIDER (드래그 가능) ── */
   .divider {
     width: 4px;
@@ -471,6 +498,7 @@ async function loadDoc(docId) {
 
       updateCharCount();
       setStatus('saved', '불러오기 완료');
+      setupPageTags();
     } else if (fileRes.status === 404) {
       setStatus('ready', '새 문건 — 내용을 입력하고 저장하세요');
     }
@@ -665,6 +693,113 @@ function setupDivider() {
     divider.classList.remove('dragging');
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
+  });
+}
+
+// ── 페이지 태그 동기화 ────────────────────────────────
+// [1p], [1-2p], [3p] 형태를 파싱해서 클릭 가능한 태그로 변환
+function renderPageTags(editorId) {
+  const el = document.getElementById(editorId);
+  if (!el) return;
+
+  // innerText를 HTML로 변환 (페이지 태그만 처리)
+  const raw = el.innerText;
+  // 패턴: [\d+p] 또는 [\d+-\d+p] 등
+  const tagPattern = /\[(\d+(?:-\d+)?p)\]/g;
+
+  // contenteditable이라 innerHTML 직접 조작
+  // 텍스트 노드만 순회해서 태그 삽입
+  processPageTags(el);
+}
+
+function processPageTags(el) {
+  const pattern = /\[(\d+(?:-\d+)?p)\]/g;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+  const nodes = [];
+  let node;
+  while (node = walker.nextNode()) nodes.push(node);
+
+  nodes.forEach(textNode => {
+    const text = textNode.textContent;
+    if (!pattern.test(text)) return;
+    pattern.lastIndex = 0;
+
+    const frag = document.createDocumentFragment();
+    let last = 0, m;
+    while ((m = pattern.exec(text)) !== null) {
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const span = document.createElement('span');
+      span.className = 'page-tag';
+      span.dataset.page = m[1];
+      span.textContent = m[0];
+      span.addEventListener('click', onPageTagClick);
+      span.addEventListener('mouseenter', onPageTagHover);
+      span.addEventListener('mouseleave', onPageTagLeave);
+      frag.appendChild(span);
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    textNode.parentNode.replaceChild(frag, textNode);
+  });
+}
+
+function onPageTagClick(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const page = e.currentTarget.dataset.page;
+  const sourceId = e.currentTarget.closest('#editor-original') ? 'editor-original' : 'editor-translation';
+  const targetId = sourceId === 'editor-original' ? 'editor-translation' : 'editor-original';
+  scrollToPage(targetId, page);
+  highlightPage(page);
+}
+
+function onPageTagHover(e) {
+  const page = e.currentTarget.dataset.page;
+  highlightPage(page);
+}
+
+function onPageTagLeave() {
+  clearHighlight();
+}
+
+function scrollToPage(editorId, page) {
+  const editor = document.getElementById(editorId);
+  if (!editor) return;
+  const tag = editor.querySelector(`.page-tag[data-page="${page}"]`);
+  if (!tag) return;
+  // 에디터 내에서의 상대 위치로 스크롤
+  const editorTop = editor.scrollTop;
+  const tagOffset = tag.offsetTop - editor.offsetTop;
+  editor.scrollTo({ top: tagOffset - 40, behavior: 'smooth' });
+}
+
+function highlightPage(page) {
+  clearHighlight();
+  document.querySelectorAll(`.page-tag[data-page="${page}"]`).forEach(el => {
+    el.classList.add('highlight');
+  });
+}
+
+function clearHighlight() {
+  document.querySelectorAll('.page-tag.highlight').forEach(el => {
+    el.classList.remove('highlight');
+  });
+}
+
+// 에디터 로드 후 태그 처리 (저장 시 태그 보호)
+function setupPageTags() {
+  processPageTags(document.getElementById('editor-original'));
+  processPageTags(document.getElementById('editor-translation'));
+
+  // 편집 후 커서 이동 시 재처리 (input 이벤트에서 디바운스)
+  let reprocessTimer;
+  ['editor-original', 'editor-translation'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      clearTimeout(reprocessTimer);
+      reprocessTimer = setTimeout(() => {
+        processPageTags(document.getElementById(id));
+      }, 800);
+    });
   });
 }
 
