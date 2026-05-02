@@ -439,12 +439,12 @@
   <table class="doc-table">
     <thead>
       <tr>
-        <th onclick="sortBy('id')">당안번호</th>
         <th onclick="sortBy('jongwon')">전종</th>
-        <th onclick="sortBy('title')">제목</th>
+        <th onclick="sortBy('id')">당안번호</th>
+        <th onclick="sortBy('title')">제목 / 요약</th>
         <th onclick="sortBy('date')">날짜</th>
-        <th onclick="sortBy('position')">관직</th>
-        <th onclick="sortBy('author')">이름</th>
+        <th onclick="sortBy('position')">발송자 관직</th>
+        <th onclick="sortBy('author')">발송자 이름</th>
         <th class="no-sort">태그</th>
         <th class="no-sort">관리</th>
       </tr>
@@ -700,8 +700,8 @@ function renderTable(filtered) {
     const jCls  = getJongwonBadgeClass(doc.jongwon);
     return `
       <tr>
-        <td class="td-id">${hl(doc.id)}</td>
         <td><span class="jongwon-badge ${jCls}">${doc.jongwon}- ${jInfo.name}</span></td>
+        <td class="td-id td-title" onclick="openDoc('${doc.id}')">${hl(doc.id)}</td>
         <td>
           <div class="td-title" onclick="openDoc('${doc.id}')">${hl(doc.title)}</div>
           <div class="td-summary">${hl(doc.summary||'')}</div>
