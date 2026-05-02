@@ -382,6 +382,38 @@
   }
   .tag-filter-clear:hover { color: var(--accent); text-decoration: underline; }
 
+
+  /* ── 전문 검색 ── */
+  .fulltext-toggle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 18px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--paper);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.05rem;
+    color: var(--ink-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .fulltext-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .fulltext-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .fulltext-toggle .ft-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+  .fulltext-loading {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--gold);
+    display: none;
+  }
+  .fulltext-loading.show { display: inline; }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -426,10 +458,14 @@
   <div class="toolbar">
     <div class="search-bar">
       <input type="text" class="search-input" id="search-input"
-        placeholder="당안번호, 제목, 발송자, 날짜, 요약 검색…">
+        placeholder="당안번호, 제목, 발송자, 날짜, 요약 검색… (전문 검색은 우측 버튼)">
       <button class="btn btn-search" onclick="applyFilters()">검색</button>
     </div>
     <button class="btn btn-add" onclick="openAddModal()">＋ 새 문건 추가</button>
+    <button class="fulltext-toggle" id="fulltext-btn" onclick="toggleFulltext()" title="원문·번역 전문 검색">
+      <span class="ft-dot"></span>전문 검색
+    </button>
+    <span class="fulltext-loading" id="fulltext-loading">색인 로딩 중…</span>
   </div>
 
   <!-- 결과 요약 -->
@@ -568,6 +604,8 @@ let sortAsc = true;
 let editingId = null;   // 수정 중인 문건 ID (null이면 신규)
 let currentCol = 'archive';
 let activeTags = [];        // AND 필터 중인 태그 목록
+let fulltextMode = false;   // 전문 검색 모드
+let searchIndex  = null;    // search-index.json 캐시
 
 // ── 초기화 ─────────────────────────────────────────────
 async function init() {
@@ -662,16 +700,28 @@ function applyFilters() {
       activeTags.every(at => (d.tags||[]).includes(at))
     );
 
-  if (searchQuery)
-    filtered = filtered.filter(d =>
-      (d.id       ||'').toLowerCase().includes(searchQuery) ||
-      (d.title    ||'').toLowerCase().includes(searchQuery) ||
-      (d.author   ||'').toLowerCase().includes(searchQuery) ||
-      (d.position ||'').toLowerCase().includes(searchQuery) ||
-      (d.date     ||'').toLowerCase().includes(searchQuery) ||
-      (d.summary  ||'').toLowerCase().includes(searchQuery) ||
-      (d.tags||[]).some(t => t.toLowerCase().includes(searchQuery))
-    );
+  if (searchQuery) {
+    if (fulltextMode && searchIndex) {
+      // 전문 검색: search-index에서 매칭된 id만 허용
+      const matchedIds = new Set(
+        searchIndex
+          .filter(e => e.text.toLowerCase().includes(searchQuery))
+          .map(e => e.id)
+      );
+      filtered = filtered.filter(d => matchedIds.has(d.id));
+    } else {
+      // 메타데이터 검색 (기본)
+      filtered = filtered.filter(d =>
+        (d.id       ||'').toLowerCase().includes(searchQuery) ||
+        (d.title    ||'').toLowerCase().includes(searchQuery) ||
+        (d.author   ||'').toLowerCase().includes(searchQuery) ||
+        (d.position ||'').toLowerCase().includes(searchQuery) ||
+        (d.date     ||'').toLowerCase().includes(searchQuery) ||
+        (d.summary  ||'').toLowerCase().includes(searchQuery) ||
+        (d.tags||[]).some(t => t.toLowerCase().includes(searchQuery))
+      );
+    }
+  }
 
   filtered.sort((a, b) => {
     let va = a[sortKey]||'', vb = b[sortKey]||'';
@@ -958,6 +1008,44 @@ function clearTagFilter() {
 }
 
 // ── 태그 검색 포함 ─────────────────────────────────────
+
+
+// ── 전문 검색 ───────────────────────────────────────────
+async function toggleFulltext() {
+  fulltextMode = !fulltextMode;
+  const btn = document.getElementById('fulltext-btn');
+  btn.classList.toggle('active', fulltextMode);
+
+  if (fulltextMode && !searchIndex) {
+    await loadSearchIndex();
+  }
+  applyFilters();
+}
+
+async function loadSearchIndex() {
+  const cfg = ghConfig();
+  if (!cfg.token || !cfg.owner || !cfg.repo) return;
+
+  const loading = document.getElementById('fulltext-loading');
+  loading.classList.add('show');
+
+  try {
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data/${currentCol}/search-index.json`;
+    const res = await fetch(url, { headers: { 'Authorization': `token ${cfg.token}` } });
+    if (res.ok) {
+      const data = await res.json();
+      const raw = Uint8Array.from(atob(data.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+      searchIndex = JSON.parse(new TextDecoder('utf-8').decode(raw));
+    } else {
+      searchIndex = [];
+      showNotice('error', '전문 색인 없음 — viewer에서 문건을 저장하면 자동 생성됩니다');
+    }
+  } catch(e) {
+    searchIndex = [];
+  } finally {
+    loading.classList.remove('show');
+  }
+}
 
 // ── 알림 ───────────────────────────────────────────────
 let noticeTimer;
