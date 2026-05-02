@@ -301,7 +301,7 @@
     <div class="header-inner">
       <div class="header-left">
         <div class="breadcrumb">
-          <a href="index.html">열람실 홈</a>
+          <a href="../index.html">열람실 홈</a>
           <span>›</span>
           <a href="#" id="breadcrumb-col">컬렉션</a>
           <span>›</span>
@@ -401,12 +401,12 @@ let noticeTimer = null;
 async function init() {
   const params = new URLSearchParams(location.search);
   const docId  = params.get('id');
-  currentCol   = params.get('col') || 'archive';
+  currentCol   = 'archive';
 
   // 브레드크럼
   const colLabel = currentCol === 'archive' ? '제1역사당안관' : '영인 출판 자료';
   document.getElementById('breadcrumb-col').textContent = colLabel;
-  document.getElementById('breadcrumb-col').href = `collection.html?col=${currentCol}`;
+  document.getElementById('breadcrumb-col').href = 'collection.html';
 
   if (!docId) {
     setStatus('error', '문건 ID가 없습니다');
