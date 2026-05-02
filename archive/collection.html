@@ -335,6 +335,7 @@
     white-space: nowrap;
   }
   .tag:hover { background: var(--accent); color: white; }
+  .tag.active-filter { background: var(--accent); color: white; font-weight: 600; }
   .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
     border: 1px solid var(--border); border-radius: 3px; padding: 8px 10px;
     background: var(--bg); min-height: 48px; cursor: text; }
@@ -346,6 +347,40 @@
     cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 2px; }
   .tag-raw-input { border: none; outline: none; background: none;
     font-family: 'Noto Serif KR', serif; font-size: 1.05rem; flex: 1; min-width: 80px; }
+
+
+  /* ── 태그 필터 바 ── */
+  .tag-filter-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 12px 16px;
+    background: var(--paper);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    min-height: 50px;
+  }
+  .tag-filter-bar.empty { display: none; }
+  .tag-filter-label {
+    font-family: 'IM Fell English', serif;
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    font-style: italic;
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+  .tag-filter-clear {
+    margin-left: auto;
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    cursor: pointer;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    white-space: nowrap;
+  }
+  .tag-filter-clear:hover { color: var(--accent); text-decoration: underline; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
@@ -377,6 +412,13 @@
   <!-- 전종 탭 -->
   <div class="jongwon-tabs" id="jongwon-tabs"></div>
 
+  <!-- 태그 필터 바 -->
+  <div class="tag-filter-bar empty" id="tag-filter-bar">
+    <span class="tag-filter-label">태그 필터 (AND):</span>
+    <span id="tag-filter-chips"></span>
+    <span class="tag-filter-clear" onclick="clearTagFilter()">✕ 필터 초기화</span>
+  </div>
+
   <!-- 알림 -->
   <div class="notice" id="notice"></div>
 
@@ -397,9 +439,9 @@
   <table class="doc-table">
     <thead>
       <tr>
-        <th onclick="sortBy('id')">당안번호</th>
         <th onclick="sortBy('jongwon')">전종</th>
-        <th onclick="sortBy('title')">제목 / 요약</th>
+        <th onclick="sortBy('id')">당안번호</th>
+        <th onclick="sortBy('title')">제목</th>
         <th onclick="sortBy('date')">날짜</th>
         <th onclick="sortBy('position')">관직</th>
         <th onclick="sortBy('author')">이름</th>
@@ -525,6 +567,7 @@ let sortKey = 'id';
 let sortAsc = true;
 let editingId = null;   // 수정 중인 문건 ID (null이면 신규)
 let currentCol = 'archive';
+let activeTags = [];        // AND 필터 중인 태그 목록
 
 // ── 초기화 ─────────────────────────────────────────────
 async function init() {
@@ -612,6 +655,12 @@ function applyFilters() {
 
   if (activeJongwon !== 'all')
     filtered = filtered.filter(d => d.jongwon === activeJongwon);
+
+  // 태그 AND 필터
+  if (activeTags.length > 0)
+    filtered = filtered.filter(d =>
+      activeTags.every(at => (d.tags||[]).includes(at))
+    );
 
   if (searchQuery)
     filtered = filtered.filter(d =>
@@ -868,7 +917,43 @@ function removeTag(tag) {
 function getCurrentTags() { return [...currentTags]; }
 
 function filterByTag(tag) {
-  document.getElementById('search-input').value = tag;
+  if (!activeTags.includes(tag)) {
+    activeTags.push(tag);
+  } else {
+    activeTags = activeTags.filter(t => t !== tag);
+  }
+  updateTagFilterBar();
+  renderTable_refresh();
+  applyFilters();
+}
+
+function updateTagFilterBar() {
+  const bar   = document.getElementById('tag-filter-bar');
+  const chips = document.getElementById('tag-filter-chips');
+
+  if (activeTags.length === 0) {
+    bar.classList.add('empty');
+    chips.innerHTML = '';
+    return;
+  }
+
+  bar.classList.remove('empty');
+  chips.innerHTML = activeTags.map(t =>
+    `<span class="tag active-filter" onclick="filterByTag('${t}')">${t} ✕</span>`
+  ).join('');
+}
+
+function renderTable_refresh() {
+  // 테이블의 태그 칩 active 상태 갱신
+  document.querySelectorAll('.tag-list .tag').forEach(el => {
+    const tag = el.textContent;
+    el.classList.toggle('active-filter', activeTags.includes(tag));
+  });
+}
+
+function clearTagFilter() {
+  activeTags = [];
+  updateTagFilterBar();
   applyFilters();
 }
 
