@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>문건 목록 — 청대 당안 문건 자료고</title>
+<title>문건 목록 — 청대 당안 열람실</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=IM+Fell+English:ital@0;1&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -493,7 +493,7 @@ let currentCol = 'archive';
 // ── 초기화 ─────────────────────────────────────────────
 async function init() {
   const params = new URLSearchParams(location.search);
-  currentCol = params.get('col') || 'archive';
+  currentCol = 'archive';
 
   if (currentCol === 'archive') {
     document.getElementById('col-label').textContent = '제1역사당안관 소장 당안';
@@ -806,7 +806,7 @@ function sortBy(key) {
 }
 
 function openDoc(id) {
-  location.href = `viewer.html?id=${encodeURIComponent(id)}&col=${currentCol}`;
+  location.href = `viewer.html?id=${encodeURIComponent(id)}`;
 }
 
 init();
