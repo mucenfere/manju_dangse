@@ -666,7 +666,7 @@ function ghConfig() {
 let docs = [];          // 현재 로드된 문건 목록
 let activeJongwon = 'all';
 let searchQuery = '';
-let sortKey = 'id';
+let sortKey = 'date';
 let sortAsc = true;
 let editingId = null;   // 수정 중인 문건 ID (null이면 신규)
 let currentCol = 'archive';
@@ -794,6 +794,10 @@ function applyFilters() {
   }
 
   filtered.sort((a, b) => {
+    if (sortKey === 'date') {
+      const cmp = compareDate(a.date || '', b.date || '');
+      return sortAsc ? cmp : -cmp;
+    }
     let va = a[sortKey]||'', vb = b[sortKey]||'';
     return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
   });
@@ -1202,6 +1206,57 @@ function renderTagPalette() {
     >${t}<span style="font-size:0.75em;opacity:0.7;margin-left:3px;">${tagCount[t]}</span></span>`;
   }).join('');
   palette.innerHTML = label + chips;
+}
+
+
+// ── 청나라 연호 정렬 ───────────────────────────────────
+const REIGN_ORDER = [
+  '천명', '天命', 'tianming',
+  '천총', '天聰', 'tiancong',
+  '숭덕', '崇德', 'chongde',
+  '순치', '順治', 'shunzhi',
+  '강희', '康熙', 'kangxi',
+  '옹정', '雍正', 'yongzheng',
+  '건륭', '乾隆', 'qianlong',
+  '가경', '嘉慶', 'jiaqing',
+  '도광', '道光', 'daoguang',
+  '함풍', '咸豐', 'xianfeng',
+  '동치', '同治', 'tongzhi',
+  '광서', '光緒', 'guangxu',
+  '선통', '宣統', 'xuantong',
+];
+
+// 연호 인덱스 반환 (없으면 999)
+function getReignIndex(dateStr) {
+  if (!dateStr) return 999;
+  for (let i = 0; i < REIGN_ORDER.length; i++) {
+    if (dateStr.includes(REIGN_ORDER[i])) {
+      // 같은 연호면 3개씩 묶여있으니 3으로 나눈 몫
+      return Math.floor(i / 3);
+    }
+  }
+  return 999;
+}
+
+// 날짜 문자열에서 숫자 추출 (연도, 월, 일)
+function extractDateNums(dateStr) {
+  if (!dateStr) return [0, 0, 0];
+  const nums = dateStr.match(/\d+/g) || [];
+  return [
+    parseInt(nums[0] || 0),
+    parseInt(nums[1] || 0),
+    parseInt(nums[2] || 0),
+  ];
+}
+
+function compareDate(a, b) {
+  const ra = getReignIndex(a), rb = getReignIndex(b);
+  if (ra !== rb) return ra - rb;
+  const [ay, am, ad] = extractDateNums(a);
+  const [by, bm, bd] = extractDateNums(b);
+  if (ay !== by) return ay - by;
+  if (am !== bm) return am - bm;
+  return ad - bd;
 }
 
 // ── 알림 ───────────────────────────────────────────────
