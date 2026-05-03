@@ -452,7 +452,7 @@
     font-weight: 600;
   }
   .trans-btn.done::before { content: '✓ '; }
-  .trans-btn:not(.done)::before { content: '⋯ '; }
+  .trans-btn:not(.done)::before { content: ''; }
 
 
   /* ── 태그 팔레트 ── */
@@ -970,34 +970,45 @@ async function deleteDoc() {
 }
 
 // ── GitHub API PUT ─────────────────────────────────────
-async function ghPut(path, content, message, retried = false) {
+async function ghPut(path, content, message) {
   const cfg = ghConfig();
   const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
   const headers = {
     'Authorization': `token ${cfg.token}`,
     'Content-Type': 'application/json'
   };
+  const encoded = btoa(unescape(encodeURIComponent(content)));
 
-  // 최신 SHA 가져오기
-  let sha = undefined;
+  // 최신 SHA 항상 먼저 가져오기
+  let sha;
   try {
-    const res = await fetch(url, { headers });
-    if (res.ok) { const d = await res.json(); sha = d.sha; }
+    const r = await fetch(url, { headers });
+    if (r.ok) { const d = await r.json(); sha = d.sha; }
   } catch(e) {}
 
-  const body = {
-    message,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch: cfg.branch
-  };
-  if (sha) body.sha = sha;
+  const res = await fetch(url, {
+    method: 'PUT', headers,
+    body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha ? { sha } : {}) })
+  });
 
-  const res = await fetch(url, { method:'PUT', headers, body: JSON.stringify(body) });
   if (!res.ok) {
     const err = await res.json();
-    // SHA 불일치 오류면 한 번 더 재시도
-    if (!retried && err.message && err.message.includes('does not match')) {
-      return ghPut(path, content, message, true);
+    // SHA 불일치면 한 번만 재시도 (SHA 다시 가져와서)
+    if (err.message && err.message.includes('does not match')) {
+      let sha2;
+      try {
+        const r2 = await fetch(url, { headers });
+        if (r2.ok) { const d2 = await r2.json(); sha2 = d2.sha; }
+      } catch(e) {}
+      const res2 = await fetch(url, {
+        method: 'PUT', headers,
+        body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha2 ? { sha: sha2 } : {}) })
+      });
+      if (!res2.ok) {
+        const err2 = await res2.json();
+        throw new Error(err2.message || res2.status);
+      }
+      return;
     }
     throw new Error(err.message || res.status);
   }
@@ -1177,7 +1188,21 @@ async function toggleTranslated(id) {
       `${docs[idx].translated ? 'Mark' : 'Unmark'} translated: ${id}`
     );
   } catch(e) {
-    showNotice('error', '저장 실패: ' + e.message);
+    // SHA 불일치면 재시도
+    if (e.message && e.message.includes('does not match')) {
+      try {
+        await ghPut(
+          `data/${currentCol}/index.json`,
+          JSON.stringify(docs, null, 2),
+          `${docs[idx].translated ? 'Mark' : 'Unmark'} translated: ${id}`
+        );
+        return;
+      } catch(e2) {
+        showNotice('error', '저장 실패: ' + e2.message);
+      }
+    } else {
+      showNotice('error', '저장 실패: ' + e.message);
+    }
     // 실패 시 롤백
     docs[idx].translated = !docs[idx].translated;
     applyFilters();
