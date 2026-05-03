@@ -428,31 +428,9 @@
   .fulltext-loading.show { display: inline; }
 
 
-  /* ── 번역 상태 버튼 ── */
-  .trans-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 14px;
-    border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: var(--bg);
-    font-family: 'Noto Serif KR', serif;
-    font-size: 0.88rem;
-    color: var(--ink-light);
-    cursor: pointer;
-    transition: all 0.18s;
-    white-space: nowrap;
-  }
-  .trans-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .trans-btn.done {
-    background: #e0f0e8;
-    border-color: #2a8a4a;
-    color: #1a6a3a;
-    font-weight: 600;
-  }
-  .trans-btn.done::before { content: '✓ '; }
-  .trans-btn:not(.done)::before { content: ''; }
+  /* ── 번역 상태 텍스트 ── */
+  .td-trans { font-size: 1.0rem; color: var(--ink-light); }
+  .td-trans.done { color: #1a6a3a; font-weight: 600; }
 
 
   /* ── 태그 팔레트 ── */
@@ -616,6 +594,11 @@
     <div class="form-group">
       <label>요약</label>
       <textarea id="f-summary" placeholder="문건 내용 간략 요약 (선택)"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>번역 상태</label>
+      <input type="text" id="f-translated" placeholder="예: 완료 / 번역중 / 초벌번역">
     </div>
 
     <div class="form-group">
@@ -829,12 +812,7 @@ function renderTable(filtered) {
         <td>
           <div class="tag-list">${[...(doc.tags||[])].sort((a,b)=>a.localeCompare(b,'ko')).map(t=>`<span class="tag" onclick="filterByTag('${t}')">${t}</span>`).join('')}</div>
         </td>
-        <td>
-          <button
-            class="trans-btn ${doc.translated ? 'done' : ''}"
-            onclick="toggleTranslated('${doc.id}')"
-          >${doc.translated ? '완료' : '번역중'}</button>
-        </td>
+        <td class="td-trans ${doc.translated === '완료' ? 'done' : ''}">${doc.translated || '번역중'}</td>
         <td>
           <button class="btn btn-cancel" style="padding:6px 14px;font-size:1.01rem"
             onclick="openEditModal('${doc.id}')">수정</button>
@@ -854,7 +832,7 @@ function openAddModal() {
   editingId = null;
   document.getElementById('modal-title').textContent = '새 문건 추가';
   document.getElementById('btn-delete').style.display = 'none';
-  ['f-id','f-title','f-date','f-transcribed','f-position','f-author','f-summary']
+  ['f-id','f-title','f-date','f-transcribed','f-position','f-author','f-summary','f-translated']
     .forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-jongwon').value = '04';
   document.getElementById('f-id').disabled = false;
@@ -877,6 +855,7 @@ function openEditModal(id) {
   document.getElementById('f-position').value    = doc.position || '';
   document.getElementById('f-author').value      = doc.author || '';
   document.getElementById('f-summary').value     = doc.summary || '';
+  document.getElementById('f-translated').value = doc.translated || '';
   renderTagChips(doc.tags || []);
   document.getElementById('doc-modal').classList.add('open');
 }
@@ -899,6 +878,7 @@ async function saveDoc() {
     position:    document.getElementById('f-position').value.trim(),
     author:      document.getElementById('f-author').value.trim(),
     summary:     document.getElementById('f-summary').value.trim(),
+    translated:  document.getElementById('f-translated').value.trim(),
     tags:        getCurrentTags(),
     filename:    id.replace(/[^a-zA-Z0-9\-]/g, '-') + '.json',
   };
@@ -979,7 +959,7 @@ async function ghPut(path, content, message) {
   };
   const encoded = btoa(unescape(encodeURIComponent(content)));
 
-  // 최신 SHA 항상 먼저 가져오기
+  // 저장 직전 최신 SHA 가져오기
   let sha;
   try {
     const r = await fetch(url, { headers });
@@ -993,23 +973,6 @@ async function ghPut(path, content, message) {
 
   if (!res.ok) {
     const err = await res.json();
-    // SHA 불일치면 한 번만 재시도 (SHA 다시 가져와서)
-    if (err.message && err.message.includes('does not match')) {
-      let sha2;
-      try {
-        const r2 = await fetch(url, { headers });
-        if (r2.ok) { const d2 = await r2.json(); sha2 = d2.sha; }
-      } catch(e) {}
-      const res2 = await fetch(url, {
-        method: 'PUT', headers,
-        body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha2 ? { sha: sha2 } : {}) })
-      });
-      if (!res2.ok) {
-        const err2 = await res2.json();
-        throw new Error(err2.message || res2.status);
-      }
-      return;
-    }
     throw new Error(err.message || res.status);
   }
 }
@@ -1167,46 +1130,6 @@ function renderTagPalette() {
     >${t}<span style="font-size:0.75em;opacity:0.7;margin-left:3px;">${tagCount[t]}</span></span>`;
   }).join('');
   palette.innerHTML = label + chips;
-}
-
-// ── 번역 상태 토글 ─────────────────────────────────────
-async function toggleTranslated(id) {
-  const idx = docs.findIndex(d => d.id === id);
-  if (idx === -1) return;
-  docs[idx].translated = !docs[idx].translated;
-
-  // 즉시 UI 반영
-  applyFilters();
-
-  // GitHub 저장
-  const cfg = ghConfig();
-  if (!cfg.token || !cfg.owner || !cfg.repo) return;
-  try {
-    await ghPut(
-      `data/${currentCol}/index.json`,
-      JSON.stringify(docs, null, 2),
-      `${docs[idx].translated ? 'Mark' : 'Unmark'} translated: ${id}`
-    );
-  } catch(e) {
-    // SHA 불일치면 재시도
-    if (e.message && e.message.includes('does not match')) {
-      try {
-        await ghPut(
-          `data/${currentCol}/index.json`,
-          JSON.stringify(docs, null, 2),
-          `${docs[idx].translated ? 'Mark' : 'Unmark'} translated: ${id}`
-        );
-        return;
-      } catch(e2) {
-        showNotice('error', '저장 실패: ' + e2.message);
-      }
-    } else {
-      showNotice('error', '저장 실패: ' + e.message);
-    }
-    // 실패 시 롤백
-    docs[idx].translated = !docs[idx].translated;
-    applyFilters();
-  }
 }
 
 // ── 알림 ───────────────────────────────────────────────
