@@ -221,8 +221,8 @@
   .td-author-name { font-size: 1.12rem; color: var(--ink-mid); }
 
   .jongwon-badge { font-size: 0.87rem; padding: 3px 10px; border-radius: 3px; font-family: 'IM Fell English', serif; white-space: nowrap; font-weight: 600; }
-  .j-02 { background: #fde8e0; color: #8b2e0f; }
-  .j-02r { background: #fde8e0; color: #8b2e0f; }
+  .j-02a { background: #fde8e0; color: #8b2e0f; }
+  .j-02b { background: #fde8e0; color: #8b2e0f; }
   .j-03 { background: #e0eafd; color: #1a3a8b; }
   .j-04 { background: #e8fde0; color: #2a6a0f; }
   .j-05 { background: #fdf5e0; color: #8b6a0f; }
@@ -571,8 +571,8 @@
       <div class="form-group">
         <label>전종 (全宗) *</label>
         <select id="f-jongwon">
-          <option value="02">02 — 궁중당 (宮中檔)</option>
-          <option value="02r">02 — 청실록 (淸實錄)</option>
+          <option value="02a">02 — 궁중당 (宮中檔)</option>
+          <option value="02b">02 — 청실록 (淸實錄)</option>
           <option value="03">03 — 군기처 (軍機處)</option>
           <option value="04" selected>04 — 주비주접 (硃批奏摺)</option>
           <option value="05">05 — 내무부 (內務府)</option>
@@ -640,8 +640,8 @@
 <script>
 // ── 전종 정의 ──────────────────────────────────────────
 const JONGWON = {
-  '02': { name: '궁중당',   cn: '宮中檔' },
-  '02r': { name: '청실록',   cn: '淸實錄' },
+  '02a': { name: '궁중당',   cn: '宮中檔' },
+  '02b': { name: '청실록',   cn: '淸實錄' },
   '03': { name: '군기처',   cn: '軍機處' },
   '04': { name: '주비주접', cn: '硃批奏摺' },
   '05': { name: '내무부',   cn: '內務府' },
@@ -649,7 +649,7 @@ const JONGWON = {
 
 function getJongwonInfo(code) { return JONGWON[code] || { name: code, cn: '' }; }
 function getJongwonBadgeClass(code) {
-  return { '02':'j-02','02r':'j-02r','03':'j-03','04':'j-04','05':'j-05' }[code] || 'j-etc';
+  return { '02a':'j-02a','02b':'j-02b','03':'j-03','04':'j-04','05':'j-05' }[code] || 'j-etc';
 }
 
 // ── GitHub 설정 (localStorage) ─────────────────────────
