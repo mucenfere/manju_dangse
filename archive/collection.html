@@ -222,6 +222,7 @@
 
   .jongwon-badge { font-size: 0.87rem; padding: 3px 10px; border-radius: 3px; font-family: 'IM Fell English', serif; white-space: nowrap; font-weight: 600; }
   .j-02 { background: #fde8e0; color: #8b2e0f; }
+  .j-02r { background: #fde8e0; color: #8b2e0f; }
   .j-03 { background: #e0eafd; color: #1a3a8b; }
   .j-04 { background: #e8fde0; color: #2a6a0f; }
   .j-05 { background: #fdf5e0; color: #8b6a0f; }
@@ -553,12 +554,13 @@
         <input type="text" id="f-id" placeholder="예: 04-02-002-000038-0023">
       </div>
       <div class="form-group">
-        <label>전종 (全宗) *</label>
+        <label>전종 *</label>
         <select id="f-jongwon">
-          <option value="02">02 — 궁중당 (宮中檔)</option>
-          <option value="03">03 — 군기처 (軍機處)</option>
-          <option value="04" selected>04 — 주비주접 (硃批奏摺)</option>
-          <option value="05">05 — 내무부 (內務府)</option>
+          <option value="02">02 — 궁중당</option>
+          <option value="02r">02 — 청실록</option>
+          <option value="03">03 — 군기처</option>
+          <option value="04" selected>04 — 주비주접</option>
+          <option value="05">05 — 내무부</option>
           <option value="etc">기타</option>
         </select>
       </div>
@@ -598,7 +600,7 @@
 
     <div class="form-group">
       <label>작업상태</label>
-      <input type="text" id="f-translated" placeholder="예: 완료 / 번역중 / 초벌번역">
+      <input type="text" id="f-translated" placeholder="예: 완료 / 번역중 / 기타">
     </div>
 
     <div class="form-group">
@@ -624,6 +626,7 @@
 // ── 전종 정의 ──────────────────────────────────────────
 const JONGWON = {
   '02': { name: '궁중당',   cn: '宮中檔' },
+  '02r': { name: '청실록',   cn: '淸實錄' },
   '03': { name: '군기처',   cn: '軍機處' },
   '04': { name: '주비주접', cn: '硃批奏摺' },
   '05': { name: '내무부',   cn: '內務府' },
@@ -631,7 +634,7 @@ const JONGWON = {
 
 function getJongwonInfo(code) { return JONGWON[code] || { name: code, cn: '' }; }
 function getJongwonBadgeClass(code) {
-  return { '02':'j-02','03':'j-03','04':'j-04','05':'j-05' }[code] || 'j-etc';
+  return { '02':'j-02','02r':'j-02r','03':'j-03','04':'j-04','05':'j-05' }[code] || 'j-etc';
 }
 
 // ── GitHub 설정 (localStorage) ─────────────────────────
@@ -655,6 +658,7 @@ let currentCol = 'archive';
 let activeTags = [];        // AND 필터 중인 태그 목록
 let fulltextMode = false;   // 전문 검색 모드
 let searchIndex  = null;    // search-index.json 캐시
+const shaCache   = {};       // 파일별 SHA 캐시
 
 // ── 초기화 ─────────────────────────────────────────────
 async function init() {
@@ -701,6 +705,7 @@ async function loadDocs() {
       docs = [];
     } else if (res.ok) {
       const data = await res.json();
+      shaCache[path] = data.sha;   // SHA 캐시
       const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
       docs = JSON.parse(content);
     }
@@ -847,7 +852,7 @@ function openEditModal(id) {
   document.getElementById('modal-title').textContent = '문건 수정';
   document.getElementById('btn-delete').style.display = 'block';
   document.getElementById('f-id').value          = doc.id || '';
-  document.getElementById('f-id').disabled       = true;
+  document.getElementById('f-id').disabled       = false;
   document.getElementById('f-jongwon').value     = doc.jongwon || '04';
   document.getElementById('f-title').value       = doc.title || '';
   document.getElementById('f-date').value        = doc.date || '';
@@ -866,7 +871,7 @@ function closeModal() {
 
 // ── 저장 ───────────────────────────────────────────────
 async function saveDoc() {
-  const id = editingId || document.getElementById('f-id').value.trim();
+  const id = document.getElementById('f-id').value.trim();
   if (!id) { alert('당안번호는 필수입니다.'); return; }
 
   const docData = {
@@ -884,11 +889,11 @@ async function saveDoc() {
   };
 
   if (!editingId) {
-    if (docs.find(d => d.id === id)) { alert('이미 존재하는 당안번호입니다.'); return; }
     docs.push(docData);
   } else {
     const idx = docs.findIndex(d => d.id === editingId);
     if (idx !== -1) docs[idx] = { ...docs[idx], ...docData };
+    else docs.push(docData);
   }
 
   closeModal();
@@ -959,12 +964,14 @@ async function ghPut(path, content, message) {
   };
   const encoded = btoa(unescape(encodeURIComponent(content)));
 
-  // 저장 직전 최신 SHA 가져오기
-  let sha;
-  try {
-    const r = await fetch(url, { headers });
-    if (r.ok) { const d = await r.json(); sha = d.sha; }
-  } catch(e) {}
+  // 캐시된 SHA 사용, 없으면 GET으로 가져오기
+  let sha = shaCache[path];
+  if (!sha) {
+    try {
+      const r = await fetch(url, { headers });
+      if (r.ok) { const d = await r.json(); sha = d.sha; shaCache[path] = sha; }
+    } catch(e) {}
+  }
 
   const res = await fetch(url, {
     method: 'PUT', headers,
@@ -973,8 +980,35 @@ async function ghPut(path, content, message) {
 
   if (!res.ok) {
     const err = await res.json();
+    // SHA 불일치 → 캐시 무효화 후 재시도
+    if (err.message && err.message.includes('does not match')) {
+      delete shaCache[path];
+      try {
+        const r2 = await fetch(url, { headers });
+        if (r2.ok) { const d2 = await r2.json(); shaCache[path] = d2.sha; }
+      } catch(e) {}
+      const sha2 = shaCache[path];
+      const res2 = await fetch(url, {
+        method: 'PUT', headers,
+        body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha2 ? { sha: sha2 } : {}) })
+      });
+      if (!res2.ok) {
+        const err2 = await res2.json();
+        throw new Error(err2.message || res2.status);
+      }
+      // 성공 시 새 SHA 갱신
+      const result2 = await res2.json();
+      if (result2.content?.sha) shaCache[path] = result2.content.sha;
+      return;
+    }
     throw new Error(err.message || res.status);
   }
+
+  // 성공 시 SHA 갱신
+  try {
+    const result = await res.json();
+    if (result.content?.sha) shaCache[path] = result.content.sha;
+  } catch(e) {}
 }
 
 
