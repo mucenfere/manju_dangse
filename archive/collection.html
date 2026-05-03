@@ -427,6 +427,33 @@
   }
   .fulltext-loading.show { display: inline; }
 
+
+  /* ── 번역 상태 버튼 ── */
+  .trans-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .trans-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .trans-btn.done {
+    background: #e0f0e8;
+    border-color: #2a8a4a;
+    color: #1a6a3a;
+    font-weight: 600;
+  }
+  .trans-btn.done::before { content: '✓ '; }
+  .trans-btn:not(.done)::before { content: '⋯ '; }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -492,6 +519,7 @@
         <th onclick="sortBy('title')">제목</th>
         <th onclick="sortBy('date')">날짜</th>
         <th class="no-sort">태그</th>
+        <th class="no-sort">번역</th>
         <th class="no-sort">관리</th>
       </tr>
     </thead>
@@ -771,6 +799,12 @@ function renderTable(filtered) {
         <td class="td-date">${doc.date||''}</td>
         <td>
           <div class="tag-list">${[...(doc.tags||[])].sort((a,b)=>a.localeCompare(b,'ko')).map(t=>`<span class="tag" onclick="filterByTag('${t}')">${t}</span>`).join('')}</div>
+        </td>
+        <td>
+          <button
+            class="trans-btn ${doc.translated ? 'done' : ''}"
+            onclick="toggleTranslated('${doc.id}')"
+          >${doc.translated ? '완료' : '번역중'}</button>
         </td>
         <td>
           <button class="btn btn-cancel" style="padding:6px 14px;font-size:1.01rem"
@@ -1058,6 +1092,33 @@ async function loadSearchIndex() {
     searchIndex = [];
   } finally {
     loading.classList.remove('show');
+  }
+}
+
+
+// ── 번역 상태 토글 ─────────────────────────────────────
+async function toggleTranslated(id) {
+  const idx = docs.findIndex(d => d.id === id);
+  if (idx === -1) return;
+  docs[idx].translated = !docs[idx].translated;
+
+  // 즉시 UI 반영
+  applyFilters();
+
+  // GitHub 저장
+  const cfg = ghConfig();
+  if (!cfg.token || !cfg.owner || !cfg.repo) return;
+  try {
+    await ghPut(
+      `data/${currentCol}/index.json`,
+      JSON.stringify(docs, null, 2),
+      `${docs[idx].translated ? 'Mark' : 'Unmark'} translated: ${id}`
+    );
+  } catch(e) {
+    showNotice('error', '저장 실패: ' + e.message);
+    // 실패 시 롤백
+    docs[idx].translated = !docs[idx].translated;
+    applyFilters();
   }
 }
 
