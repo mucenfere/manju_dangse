@@ -182,9 +182,9 @@
     "filename": "---.json"
   },
   {
-    "id": "002",
-    "jongwon": "etc",
-    "title": "청고종실록115",
+    "id": "청실록",
+    "jongwon": "02r",
+    "title": "",
     "date": "乾隆05年04月24日",
     "transcribed": "",
     "position": "",
@@ -194,7 +194,7 @@
     "tags": [
       "봉금"
     ],
-    "filename": "002.json"
+    "filename": "---.json"
   },
   {
     "id": "청고종실록 건륭05년09월29일",
