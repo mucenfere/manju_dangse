@@ -548,19 +548,34 @@
   <div class="modal">
     <h2 id="modal-title">새 문건 추가</h2>
 
+    <div id="internal-id-display" style="
+      font-family: 'IM Fell English', serif;
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      background: var(--bg);
+      border: 1px solid var(--border-light);
+      border-radius: 3px;
+      padding: 6px 14px;
+      margin-bottom: 20px;
+      letter-spacing: 0.05em;
+    ">
+      <span style="opacity:0.7;">내부 ID:</span>
+      <span id="f-internal-id-display" style="color: var(--ink-mid); font-weight:600; margin-left:8px;"></span>
+    </div>
+    <input type="hidden" id="f-internal-id">
     <div class="form-row">
       <div class="form-group">
-        <label>당안번호 *</label>
-        <input type="text" id="f-id" placeholder="예: 04-02-002-000038-0023">
+        <label>당안번호</label>
+        <input type="text" id="f-id" placeholder="예: 04-02-002-000038-0023 (선택사항)">
       </div>
       <div class="form-group">
-        <label>전종 *</label>
+        <label>전종 (全宗) *</label>
         <select id="f-jongwon">
-          <option value="02">02 — 궁중당</option>
-          <option value="02r">02 — 청실록</option>
-          <option value="03">03 — 군기처</option>
-          <option value="04" selected>04 — 주비주접</option>
-          <option value="05">05 — 내무부</option>
+          <option value="02">02 — 궁중당 (宮中檔)</option>
+          <option value="02r">02 — 청실록 (淸實錄)</option>
+          <option value="03">03 — 군기처 (軍機處)</option>
+          <option value="04" selected>04 — 주비주접 (硃批奏摺)</option>
+          <option value="05">05 — 내무부 (內務府)</option>
           <option value="etc">기타</option>
         </select>
       </div>
@@ -600,7 +615,7 @@
 
     <div class="form-group">
       <label>작업상태</label>
-      <input type="text" id="f-translated" placeholder="예: 완료 / 번역중 / 기타">
+      <input type="text" id="f-translated" placeholder="예: 완료 / 번역중 / 초벌번역">
     </div>
 
     <div class="form-group">
@@ -806,11 +821,11 @@ function renderTable(filtered) {
     return `
       <tr>
         <td><span class="jongwon-badge ${jCls}">${doc.jongwon}- ${jInfo.name}</span></td>
-        <td class="td-id td-title" onclick="openDoc('${doc.id}')">${hl(doc.id)}</td>
+        <td class="td-id td-title" onclick="openDoc('${doc.internalId || doc.id}')">${hl(doc.id)}</td>
         <td class="td-position">${hl(doc.position||'')}</td>
         <td class="td-author-name">${hl(doc.author||'')}</td>
         <td>
-          <div class="td-title" onclick="openDoc('${doc.id}')">${hl(doc.title)}</div>
+          <div class="td-title" onclick="openDoc('${doc.internalId || doc.id}')">${hl(doc.title)}</div>
           <div class="td-summary">${hl(doc.summary||'')}</div>
         </td>
         <td class="td-date">${doc.date||''}</td>
@@ -820,7 +835,7 @@ function renderTable(filtered) {
         <td class="td-trans ${doc.translated === '완료' ? 'done' : ''}">${doc.translated || '번역중'}</td>
         <td>
           <button class="btn btn-cancel" style="padding:6px 14px;font-size:1.01rem"
-            onclick="openEditModal('${doc.id}')">수정</button>
+            onclick="openEditModal('${doc.internalId || doc.id}')">수정</button>
         </td>
       </tr>`;
   }).join('');
@@ -839,6 +854,9 @@ function openAddModal() {
   document.getElementById('btn-delete').style.display = 'none';
   ['f-id','f-title','f-date','f-transcribed','f-position','f-author','f-summary','f-translated']
     .forEach(id => document.getElementById(id).value = '');
+  const newId = generateInternalId();
+  document.getElementById('f-internal-id').value = newId;
+  document.getElementById('f-internal-id-display').textContent = newId;
   document.getElementById('f-jongwon').value = '04';
   document.getElementById('f-id').disabled = false;
   renderTagChips([]);
@@ -848,11 +866,14 @@ function openAddModal() {
 function openEditModal(id) {
   const doc = docs.find(d => d.id === id);
   if (!doc) return;
-  editingId = id;
+  editingId = doc.internalId || doc.filename || doc.id;
   document.getElementById('modal-title').textContent = '문건 수정';
   document.getElementById('btn-delete').style.display = 'block';
   document.getElementById('f-id').value          = doc.id || '';
   document.getElementById('f-id').disabled       = false;
+  const existingId = doc.internalId || doc.filename?.replace('.json','') || doc.id;
+  document.getElementById('f-internal-id').value = existingId;
+  document.getElementById('f-internal-id-display').textContent = existingId;
   document.getElementById('f-jongwon').value     = doc.jongwon || '04';
   document.getElementById('f-title').value       = doc.title || '';
   document.getElementById('f-date').value        = doc.date || '';
@@ -871,11 +892,14 @@ function closeModal() {
 
 // ── 저장 ───────────────────────────────────────────────
 async function saveDoc() {
-  const id = document.getElementById('f-id').value.trim();
-  if (!id) { alert('당안번호는 필수입니다.'); return; }
+  const displayId  = document.getElementById('f-id').value.trim();
+  const internalId = document.getElementById('f-internal-id').value.trim() || generateInternalId();
+  const id = internalId;  // 파일 기준 키는 내부 ID
+  if (!internalId) { alert('내부 ID 생성 실패. 다시 시도해주세요.'); return; }
 
   const docData = {
-    id,
+    id:          displayId || internalId,  // 표시용 당안번호 (없으면 내부 ID)
+    internalId:  internalId,               // 파일명 기준 내부 ID
     jongwon:     document.getElementById('f-jongwon').value,
     title:       document.getElementById('f-title').value.trim(),
     date:        document.getElementById('f-date').value.trim(),
@@ -885,13 +909,13 @@ async function saveDoc() {
     summary:     document.getElementById('f-summary').value.trim(),
     translated:  document.getElementById('f-translated').value.trim(),
     tags:        getCurrentTags(),
-    filename:    id.replace(/[^a-zA-Z0-9\-]/g, '-') + '.json',
+    filename:    internalId.replace(/[^a-zA-Z0-9\-]/g, '-') + '.json',
   };
 
   if (!editingId) {
     docs.push(docData);
   } else {
-    const idx = docs.findIndex(d => d.id === editingId);
+    const idx = docs.findIndex(d => (d.internalId || d.filename || d.id) === editingId);
     if (idx !== -1) docs[idx] = { ...docs[idx], ...docData };
     else docs.push(docData);
   }
@@ -933,7 +957,7 @@ async function deleteDoc() {
   if (!editingId) return;
   if (!confirm(`[${editingId}] 문건을 삭제하시겠습니까?`)) return;
 
-  docs = docs.filter(d => d.id !== editingId);
+  docs = docs.filter(d => (d.internalId || d.filename || d.id) !== editingId);
   closeModal();
   renderTabs();
   applyFilters();
@@ -1011,6 +1035,20 @@ async function ghPut(path, content, message) {
   } catch(e) {}
 }
 
+
+
+// ── 내부 ID 자동 생성 ──────────────────────────────────
+function generateInternalId() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const ts = now.getFullYear().toString() +
+    pad(now.getMonth()+1) +
+    pad(now.getDate()) + '-' +
+    pad(now.getHours()) +
+    pad(now.getMinutes()) +
+    pad(now.getSeconds());
+  return 'arc-' + ts;
+}
 
 // ── 태그 입력 관리 ─────────────────────────────────────
 let currentTags = [];
@@ -1188,6 +1226,7 @@ function sortBy(key) {
 }
 
 function openDoc(id) {
+  // id는 doc.internalId || doc.id
   location.href = `viewer.html?id=${encodeURIComponent(id)}`;
 }
 
