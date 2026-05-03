@@ -552,7 +552,7 @@
     <div class="form-row">
       <div class="form-group">
         <label>당안번호</label>
-        <input type="text" id="f-id" placeholder="예: 04-02-002-000038-0023 (비워두면 자동 부여)">
+        <input type="text" id="f-id" placeholder="예: 04-02-002-000038-0023 (선택사항)">
       </div>
       <div class="form-group">
         <label>전종 (全宗) *</label>
@@ -877,7 +877,7 @@ async function saveDoc() {
   const displayId  = document.getElementById('f-id').value.trim();
   const internalId = document.getElementById('f-internal-id').value.trim() || generateInternalId();
   const id = internalId;  // 파일 기준 키는 내부 ID
-  if (!id) { alert('당안번호는 필수입니다.'); return; }
+  if (!internalId) { alert('내부 ID 생성 실패. 다시 시도해주세요.'); return; }
 
   const docData = {
     id:          displayId || internalId,  // 표시용 당안번호 (없으면 내부 ID)
@@ -1021,16 +1021,8 @@ async function ghPut(path, content, message) {
 
 // ── 내부 ID 자동 생성 ──────────────────────────────────
 function generateInternalId() {
-  const now = new Date();
-  const date = now.getFullYear().toString() +
-    String(now.getMonth()+1).padStart(2,'0') +
-    String(now.getDate()).padStart(2,'0');
-  // 같은 날짜 기존 항목 수 세기
-  const todayCount = docs.filter(d =>
-    (d.internalId || d.filename || '').includes(date)
-  ).length;
-  const seq = String(todayCount + 1).padStart(3, '0');
-  return `arc-${date}-${seq}`;
+  // 현재 밀리초 타임스탬프 기반 — 중복 불가
+  return 'arc-' + Date.now();
 }
 
 // ── 태그 입력 관리 ─────────────────────────────────────
