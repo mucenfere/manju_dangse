@@ -454,6 +454,29 @@
   .trans-btn.done::before { content: '✓ '; }
   .trans-btn:not(.done)::before { content: '⋯ '; }
 
+
+  /* ── 태그 팔레트 ── */
+  .tag-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    background: var(--paper);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+  }
+  .tag-palette.empty { display: none; }
+  .tag-palette-label {
+    width: 100%;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 4px;
+  }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -480,6 +503,11 @@
 
   <!-- 전종 탭 -->
   <div class="jongwon-tabs" id="jongwon-tabs"></div>
+
+  <!-- 태그 팔레트 -->
+  <div class="tag-palette empty" id="tag-palette">
+    <span class="tag-palette-label">Tags</span>
+  </div>
 
   <!-- 태그 필터 바 -->
   <div class="tag-filter-bar empty" id="tag-filter-bar">
@@ -721,6 +749,7 @@ function renderTabs() {
   });
 
   container.innerHTML = html;
+  renderTagPalette();
 }
 
 // ── 필터 & 렌더 ────────────────────────────────────────
@@ -1021,6 +1050,7 @@ function filterByTag(tag) {
     activeTags = activeTags.filter(t => t !== tag);
   }
   updateTagFilterBar();
+  renderTagPalette();
   renderTable_refresh();
   applyFilters();
 }
@@ -1052,6 +1082,7 @@ function renderTable_refresh() {
 function clearTagFilter() {
   activeTags = [];
   updateTagFilterBar();
+  renderTagPalette();
   applyFilters();
 }
 
@@ -1095,6 +1126,37 @@ async function loadSearchIndex() {
   }
 }
 
+
+
+// ── 태그 팔레트 렌더 ───────────────────────────────────
+function renderTagPalette() {
+  // 전체 문건에서 태그 수집 → 가나다/ABC 정렬
+  const tagCount = {};
+  docs.forEach(d => {
+    (d.tags || []).forEach(t => {
+      tagCount[t] = (tagCount[t] || 0) + 1;
+    });
+  });
+
+  const allTags = Object.keys(tagCount).sort((a, b) => a.localeCompare(b, 'ko'));
+  const palette = document.getElementById('tag-palette');
+
+  if (allTags.length === 0) {
+    palette.classList.add('empty');
+    return;
+  }
+
+  palette.classList.remove('empty');
+  const label = '<span class="tag-palette-label">Tags</span>';
+  const chips = allTags.map(t => {
+    const isActive = activeTags.includes(t);
+    return `<span class="tag ${isActive ? 'active-filter' : ''}"
+      onclick="filterByTag('${t}')"
+      title="${tagCount[t]}건"
+    >${t}<span style="font-size:0.75em;opacity:0.7;margin-left:3px;">${tagCount[t]}</span></span>`;
+  }).join('');
+  palette.innerHTML = label + chips;
+}
 
 // ── 번역 상태 토글 ─────────────────────────────────────
 async function toggleTranslated(id) {
