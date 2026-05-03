@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YWD860LFFR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YWD860LFFR');
+</script>
+
 <link rel="icon" href="https://mucenfere.github.io/favicon_dangse.svg" type="image/svg+xml">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>문건 목록 — 청대 당안 열람실</title>
+<title>청대 당안 자료고</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=IM+Fell+English:ital@0;1&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -18,7 +27,8 @@
     --gold:         #b8912a;
     --border:       #d4d8e2;
     --border-light: #e8eaf0;
-    --header-bg:    #e8dcc8;
+    --private-bg:   #7a5c3e;
+    --shared-bg:    #5a4a38;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,13 +38,14 @@
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
+    font-size: 18px;
   }
 
   /* ── HEADER ── */
   header {
     background: #e8dcc8;
-    padding: 50px 67px 39px;
-    border-bottom: 4px solid var(--gold);
+    padding: 50px 67px 39px;   /* 36×1.4  48×1.4  28×1.4 */
+    border-bottom: 4px solid var(--gold);  /* 3×1.4≈4 */
     position: relative;
     overflow: hidden;
   }
@@ -43,221 +54,239 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      transparent, transparent 84px,
-      rgba(255,255,255,0.015) 84px,
-      rgba(255,255,255,0.015) 85px
-    );
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 84px,        /* 60×1.4 */
+        rgba(255,255,255,0.015) 84px,
+        rgba(255,255,255,0.015) 85px
+      );
     pointer-events: none;
   }
 
   .header-inner {
-    max-width: 1344px;
+    max-width: 1344px;           /* 960×1.4 */
     margin: 0 auto;
     position: relative;
   }
 
-  .breadcrumb {
-    font-size: 1.01rem;
-    color: var(--accent);
-    margin-bottom: 10px;
-    font-family: 'IM Fell English', serif;
-  }
-  .breadcrumb a { color: var(--accent); text-decoration: none; }
-  .breadcrumb a:hover { text-decoration: underline; }
-
   h1 {
-    font-size: 2.0rem;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2.8rem;           /* 2rem×1.4 */
     font-weight: 700;
     color: #2a1f14;
     line-height: 1.3;
+    margin-bottom: 8px;          /* 6×1.4≈8 */
   }
+
   h1 em {
     font-family: 'IM Fell English', serif;
     font-style: italic;
-    font-size: 1.26rem;
+    font-size: 1.54rem;          /* 1.1×1.4 */
     color: var(--accent);
     display: block;
     font-weight: 400;
-    margin-top: 4px;
+    margin-top: 6px;             /* 4×1.4≈6 */
+  }
+
+  .header-desc {
+    font-size: 1.15rem;          /* 0.82×1.4 */
+    color: #6a5a48;
+    margin-top: 20px;            /* 14×1.4≈20 */
+    line-height: 1.9;
+    max-width: 756px;            /* 540×1.4 */
   }
 
   /* ── MAIN ── */
   main {
-    max-width: 1800px;
+    max-width: 1344px;           /* 960×1.4 */
     margin: 0 auto;
-    padding: 39px 48px 112px;    /* 28×1.4  48×1.4  80×1.4 */
-    animation: fadeUp 0.4s ease both;
+    padding: 67px 67px 112px;   /* 48×1.4  48×1.4  80×1.4 */
   }
 
-  /* ── 전종 탭 ── */
-  .jongwon-tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 28px;          /* 20×1.4 */
-    border-bottom: 2px solid var(--border);
-  }
-
-  .j-tab {
-    padding: 13px 28px;           /* 9×1.4  20×1.4 */
-    font-size: 1.12rem;           /* 0.8×1.4 */
-    color: var(--ink-light);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .j-tab:hover { color: var(--ink); }
-  .j-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
-  .j-tab .tab-count { font-family: 'IM Fell English', serif; font-size: 0.98rem; color: var(--ink-light); margin-left: 7px; }
-
-  /* ── 툴바 ── */
-  .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 22px;          /* 16×1.4 */
-    gap: 17px;                    /* 12×1.4 */
-  }
-
-  .search-bar { display: flex; gap: 14px; flex: 1; }
-
-  .search-input {
-    flex: 1;
-    padding: 13px 20px;           /* 9×1.4  14×1.4 */
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    font-family: 'Noto Serif KR', serif;
-    font-size: 1.19rem;           /* 0.85×1.4 */
-    color: var(--ink);
-    background: var(--paper);
-    transition: border-color 0.2s;
-  }
-  .search-input:focus { outline: none; border-color: var(--accent); }
-  .search-input::placeholder { color: var(--ink-light); }
-
-  /* ── 버튼 ── */
-  .btn {
-    padding: 13px 25px;           /* 9×1.4  18×1.4 */
-    border-radius: 4px;
-    font-family: 'Noto Serif KR', serif;
-    font-size: 1.15rem;           /* 0.82×1.4 */
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .btn-search { background: var(--ink); color: white; }
-  .btn-search:hover { background: var(--accent); }
-  .btn-add { background: var(--accent); color: white; }
-  .btn-add:hover { background: var(--accent-warm); }
-  .btn-save { background: var(--accent); color: white; }
-  .btn-save:hover { background: var(--accent-warm); }
-  .btn-cancel { background: none; border: 1px solid var(--border); color: var(--ink-light); }
-  .btn-cancel:hover { border-color: var(--ink); color: var(--ink); }
-  .btn-delete { background: none; border: 1px solid #e0a0a0; color: #c04040; font-size: 1.05rem; padding: 8px 17px; }
-  .btn-delete:hover { background: #fde8e8; }
-
-  /* ── 결과 요약 ── */
-  .result-summary {
-    font-size: 1.05rem;           /* 0.75×1.4 */
-    color: var(--ink-light);
-    margin-bottom: 17px;          /* 12×1.4 */
+  .section-label {
     font-family: 'IM Fell English', serif;
-    font-style: italic;
-  }
-  .result-summary strong { color: var(--accent); font-style: normal; }
-
-  /* ── 테이블 ── */
-  .doc-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--paper);
-    border: 1px solid var(--border-light);
-    border-radius: 4px;
-    overflow: hidden;
-    font-size: 1.15rem;           /* 0.82×1.4 */
-  }
-
-  .doc-table thead th {
-    text-align: left;
-    padding: 14px 20px;           /* 10×1.4  14×1.4 */
-    font-size: 0.95rem;           /* 0.68×1.4 */
-    letter-spacing: 0.1em;
+    font-size: 0.98rem;          /* 0.7×1.4 */
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--ink-light);
-    background: var(--bg);
-    border-bottom: 2px solid var(--border);
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-  }
-  .doc-table thead th:hover { color: var(--accent); }
-  .doc-table thead th.no-sort { cursor: default; }
-  .doc-table thead th.no-sort:hover { color: var(--ink-light); }
-
-  .doc-table tbody tr {
+    margin-bottom: 28px;         /* 20×1.4≈28 */
+    padding-bottom: 14px;        /* 10×1.4≈14 */
     border-bottom: 1px solid var(--border-light);
-    transition: background 0.12s;
-  }
-  .doc-table tbody tr:hover { background: #f5f0f8; }
-  .doc-table tbody tr:last-child { border-bottom: none; }
-
-  .doc-table tbody td {
-    padding: 14px 20px;           /* 10×1.4  14×1.4 */
-    color: var(--ink-mid);
-    vertical-align: middle;
   }
 
-  .td-id { font-family: 'Noto Serif KR', serif; color: var(--accent); font-size: 1.05rem; white-space: nowrap; letter-spacing: 0.02em; }
-  .td-title { font-weight: 600; color: var(--ink); cursor: pointer; }
-  .td-title:hover { color: var(--accent); text-decoration: underline; }
-  .td-summary { font-size: 1.01rem; color: var(--ink-light); font-weight: 400; margin-top: 3px; max-width: 392px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .td-date { font-size: 1.05rem; color: var(--ink-light); white-space: nowrap; }
-  .td-position { font-size: 1.05rem; color: var(--ink-light); }
-  .td-author-name { font-size: 1.12rem; color: var(--ink-mid); }
+  /* ── COLLECTION CARDS ── */
+  .collections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 34px;                   /* 24×1.4≈34 */
+    margin-bottom: 0;
+  }
 
-  .jongwon-badge { font-size: 0.87rem; padding: 3px 10px; border-radius: 3px; font-family: 'IM Fell English', serif; white-space: nowrap; font-weight: 600; }
-  .j-02 { background: #fde8e0; color: #8b2e0f; }
-  .j-02r { background: #fde8e0; color: #8b2e0f; }
-  .j-03 { background: #e0eafd; color: #1a3a8b; }
-  .j-04 { background: #e8fde0; color: #2a6a0f; }
-  .j-05 { background: #fdf5e0; color: #8b6a0f; }
-  .j-etc { background: var(--bg); color: var(--ink-light); border: 1px solid var(--border); }
+  .collection-card {
+    border-radius: 6px;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.1);
+  }
 
-  mark { background: #fff3cd; color: var(--ink); border-radius: 2px; padding: 0 1px; }
+  .collection-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  }
 
-  .empty-state {
-    text-align: center;
-    padding: 84px 28px;           /* 60×1.4  20×1.4 */
-    color: var(--ink-light);
-    font-style: italic;
+  .card-header {
+    padding: 39px 39px 28px;    /* 28×1.4≈39  20×1.4≈28 */
+    position: relative;
+  }
+
+  .card-private .card-header { background: var(--private-bg); }
+  .card-shared  .card-header { background: var(--shared-bg); }
+
+  .card-badge {
+    display: inline-block;
+    font-size: 0.87rem;          /* 0.62×1.4 */
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 11px;           /* 3×1.4≈4  8×1.4≈11 */
+    border-radius: 3px;
+    margin-bottom: 20px;         /* 14×1.4≈20 */
     font-family: 'IM Fell English', serif;
-    font-size: 1.26rem;           /* 0.9×1.4 */
   }
 
-  /* ── 저장 상태 알림 ── */
-  .notice {
-    padding: 11px 22px;           /* 8×1.4  16×1.4 */
-    font-size: 1.09rem;           /* 0.78×1.4 */
+  .card-private .card-badge {
+    background: rgba(255,255,255,0.15);
+    color: #f0e0cc;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  .card-shared .card-badge {
+    background: rgba(255,255,255,0.15);
+    color: #f0e0cc;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  .card-title {
+    font-size: 1.47rem;          /* 1.05×1.4 */
+    font-weight: 600;
+    color: #f5ede0;
+    line-height: 1.5;
+    margin-bottom: 8px;          /* 6×1.4≈8 */
+  }
+
+  .card-title-cn {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 1.19rem;          /* 0.85×1.4 */
+    color: #c8b898;
+    margin-bottom: 0;
+  }
+
+  .card-body {
+    padding: 28px 39px 34px;    /* 20×1.4≈28  28×1.4≈39  24×1.4≈34 */
+    background: var(--paper);
+    border: 1px solid var(--border-light);
+    border-top: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-desc {
+    font-size: 1.12rem;          /* 0.8×1.4 */
+    color: var(--ink-light);
+    line-height: 1.9;
+    margin-bottom: 22px;         /* 16×1.4≈22 */
+    flex: 1;
+  }
+
+  .card-stats {
+    display: flex;
+    gap: 28px;                   /* 20×1.4≈28 */
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.96rem;          /* 1.4×1.4 */
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.95rem;          /* 0.68×1.4 */
+    color: var(--ink-light);
+    letter-spacing: 0.05em;
+    margin-top: 3px;             /* 2×1.4≈3 */
+  }
+
+  .card-arrow {
+    display: inline-block;
+    margin-top: 20px;            /* 14×1.4≈20 */
+    font-size: 1.05rem;          /* 0.75×1.4 */
+    color: var(--accent-warm);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 34px;               /* 24×1.4≈34 */
+    font-size: 1.01rem;          /* 0.72×1.4 */
+    color: var(--border);
+    border-top: 1px solid var(--border-light);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+  }
+
+  /* ── 설정 버튼 ── */
+  .settings-btn {
+    position: absolute;
+    top: 0; right: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(184,145,42,0.35);
     border-radius: 4px;
-    margin-bottom: 20px;          /* 14×1.4 */
-    display: none;
+    cursor: pointer;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.9rem;
+    color: #6a5a48;
+    transition: all 0.2s;
   }
-  .notice.show { display: block; }
-  .notice.saving { background: #fff8e0; color: #8b6a0f; border: 1px solid #e8d8a0; }
-  .notice.success { background: #e0f0e8; color: #1a6a3a; border: 1px solid #a0d8b8; }
-  .notice.error { background: #fde8e0; color: #8b2e0f; border: 1px solid #e8b0a0; }
+  .settings-btn:hover {
+    background: rgba(255,255,255,0.6);
+    border-color: var(--gold);
+    color: var(--accent);
+  }
+  .settings-btn svg { opacity: 0.7; }
 
-  /* ── 모달 ── */
+  /* 연결 상태 dot */
+  .conn-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .conn-dot.connected    { background: #2a8a4a; }
+  .conn-dot.disconnected { background: #aaa; }
+
+  /* ── 설정 모달 ── */
   .modal-overlay {
     display: none;
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 100;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
     align-items: center;
     justify-content: center;
   }
@@ -267,945 +296,313 @@
     background: var(--paper);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 39px 45px;           /* 28×1.4  32×1.4 */
-    width: 840px;                 /* 600×1.4 */
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    padding: 40px 48px;
+    width: 560px;
+    max-width: 95vw;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
   }
 
   .modal h2 {
     font-family: 'IM Fell English', serif;
-    font-size: 1.54rem;           /* 1.1×1.4 */
+    font-size: 1.4rem;
     color: var(--accent);
-    margin-bottom: 28px;          /* 20×1.4 */
-    padding-bottom: 14px;         /* 10×1.4 */
-    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 6px;
   }
 
-  .form-group { margin-bottom: 20px; }   /* 14×1.4 */
+  .modal-subtitle {
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .form-group { margin-bottom: 18px; }
   .form-group label {
     display: block;
-    font-size: 1.05rem;           /* 0.75×1.4 */
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--ink-light);
-    letter-spacing: 0.05em;
-    margin-bottom: 7px;           /* 5×1.4≈7 */
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    margin-bottom: 6px;
   }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
+  .form-group input {
     width: 100%;
-    padding: 11px 14px;           /* 8×1.4  10×1.4 */
+    padding: 11px 14px;
     border: 1px solid var(--border);
-    border-radius: 3px;
+    border-radius: 4px;
     background: var(--bg);
     font-family: 'Noto Serif KR', serif;
-    font-size: 1.19rem;           /* 0.85×1.4 */
+    font-size: 1rem;
     color: var(--ink);
+    transition: border-color 0.2s;
   }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus { outline: none; border-color: var(--accent); }
-  .form-group textarea { resize: vertical; min-height: 98px; line-height: 1.7; }   /* 70×1.4 */
+  .form-group input:focus { outline: none; border-color: var(--accent); }
+  .form-group input::placeholder { color: var(--border); }
 
-  .form-row { display: flex; gap: 20px; }   /* 14×1.4 */
+  .form-hint {
+    font-size: 0.75rem;
+    color: var(--ink-light);
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+  .form-hint a { color: var(--accent); }
+
+  .form-row { display: flex; gap: 14px; }
   .form-row .form-group { flex: 1; }
 
   .modal-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 31px;             /* 22×1.4 */
-    padding-top: 22px;            /* 16×1.4 */
+    margin-top: 28px;
+    padding-top: 20px;
     border-top: 1px solid var(--border-light);
   }
 
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 34px;                /* 24×1.4 */
-    font-size: 1.01rem;           /* 0.72×1.4 */
-    color: var(--border);
-    border-top: 1px solid var(--border-light);
-    font-family: 'IM Fell English', serif;
-    font-style: italic;
-  }
-
-
-  /* ── 태그 ── */
-  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; }
-  .tag {
-    display: inline-block;
-    font-size: 0.82rem;
-    padding: 2px 9px;
-    border-radius: 20px;
-    background: var(--border-light);
-    color: var(--ink-light);
-    font-family: 'Noto Serif KR', serif;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .tag:hover { background: var(--accent); color: white; }
-  .tag.active-filter { background: var(--accent); color: white; font-weight: 600; }
-  .tag-input-wrap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
-    border: 1px solid var(--border); border-radius: 3px; padding: 8px 10px;
-    background: var(--bg); min-height: 48px; cursor: text; }
-  .tag-input-wrap:focus-within { border-color: var(--accent); }
-  .tag-chip { display: inline-flex; align-items: center; gap: 4px;
-    background: var(--accent); color: white; border-radius: 20px;
-    padding: 2px 10px; font-size: 0.88rem; }
-  .tag-chip button { background: none; border: none; color: white;
-    cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 2px; }
-  .tag-raw-input { border: none; outline: none; background: none;
-    font-family: 'Noto Serif KR', serif; font-size: 1.05rem; flex: 1; min-width: 80px; }
-
-
-  /* ── 태그 필터 바 ── */
-  .tag-filter-bar {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 18px;
-    padding: 12px 16px;
-    background: var(--paper);
-    border: 1px solid var(--border-light);
+  .btn {
+    padding: 11px 24px;
     border-radius: 4px;
-    min-height: 50px;
-  }
-  .tag-filter-bar.empty { display: none; }
-  .tag-filter-label {
-    font-family: 'IM Fell English', serif;
-    font-size: 0.88rem;
-    color: var(--ink-light);
-    font-style: italic;
-    margin-right: 4px;
-    white-space: nowrap;
-  }
-  .tag-filter-clear {
-    margin-left: auto;
-    font-size: 0.82rem;
-    color: var(--ink-light);
-    cursor: pointer;
-    font-family: 'IM Fell English', serif;
-    font-style: italic;
-    white-space: nowrap;
-  }
-  .tag-filter-clear:hover { color: var(--accent); text-decoration: underline; }
-
-
-  /* ── 전문 검색 ── */
-  .fulltext-toggle {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 10px 18px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: var(--paper);
     font-family: 'Noto Serif KR', serif;
-    font-size: 1.05rem;
-    color: var(--ink-light);
+    font-size: 1rem;
     cursor: pointer;
+    border: none;
     transition: all 0.2s;
-    white-space: nowrap;
   }
-  .fulltext-toggle:hover { border-color: var(--accent); color: var(--accent); }
-  .fulltext-toggle.active { background: var(--accent); color: white; border-color: var(--accent); }
-  .fulltext-toggle .ft-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: currentColor; flex-shrink: 0;
-  }
-  .fulltext-loading {
+  .btn-save { background: var(--accent); color: white; }
+  .btn-save:hover { background: var(--accent-warm); }
+  .btn-cancel { background: none; border: 1px solid var(--border); color: var(--ink-light); }
+  .btn-cancel:hover { border-color: var(--ink); color: var(--ink); }
+  .btn-clear { background: none; border: none; color: #c04040; font-size: 0.85rem; cursor: pointer; padding: 0; }
+  .btn-clear:hover { text-decoration: underline; }
+
+  .conn-status {
+    font-size: 0.82rem;
+    color: var(--ink-light);
     font-family: 'IM Fell English', serif;
     font-style: italic;
-    font-size: 0.9rem;
-    color: var(--gold);
-    display: none;
-  }
-  .fulltext-loading.show { display: inline; }
-
-
-  /* ── 번역 상태 텍스트 ── */
-  .td-trans { font-size: 1.0rem; color: var(--ink-light); }
-  .td-trans.done { color: #1a6a3a; font-weight: 600; }
-
-
-  /* ── 태그 팔레트 ── */
-  .tag-palette {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 18px;
-    padding: 14px 18px;
-    background: var(--paper);
-    border: 1px solid var(--border-light);
-    border-radius: 4px;
-  }
-  .tag-palette.empty { display: none; }
-  .tag-palette-label {
-    width: 100%;
-    font-family: 'IM Fell English', serif;
-    font-size: 0.82rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    margin-bottom: 4px;
+    align-items: center;
+    gap: 6px;
   }
 
+  /* ── ANIMATIONS ── */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  header        { animation: fadeUp 0.5s ease both; }
+  .collections  { animation: fadeUp 0.5s 0.1s ease both; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-inner">
-    <div class="breadcrumb">
-      <a href="../index.html">열람실 홈</a>
-      <span style="margin:0 8px;color:var(--gold);">›</span>
-      <span id="col-label">컬렉션</span>
-    </div>
     <h1>
-      <span id="col-title">문건 목록</span>
-      <em id="col-title-cn"></em>
+      청대 당안 문건 자료고
+      <em>Qing Historical Document Archive</em>
     </h1>
+    <p class="header-desc">
+      제1역사당안관 소장 및 영인 출판된 청대 만한문 당안 자료의 원문·번역 열람 시스템입니다.<br>
+      문건을 선택하면 원문과 한국어 번역을 좌우 분할 화면으로 열람할 수 있습니다.
+    </p>
+
+    <!-- 설정 버튼 -->
+    <button class="settings-btn" onclick="openSettings()" id="settings-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      <span class="conn-dot disconnected" id="header-dot"></span>
+      GitHub 설정
+    </button>
   </div>
 </header>
 
 <main>
 
-  <!-- 전종 탭 -->
-  <div class="jongwon-tabs" id="jongwon-tabs"></div>
+  <!-- 컬렉션 카드 -->
+  <p class="section-label">Collections · 컬렉션</p>
+  <div class="collections">
 
-  <!-- 태그 팔레트 -->
-  <div class="tag-palette empty" id="tag-palette">
-    <span class="tag-palette-label">Tags</span>
-  </div>
+    <a class="collection-card card-private" href="collection.html?col=archive">
+      <div class="card-header">
+        <span class="card-badge">🔒 비공개</span>
+        <div class="card-title">제1역사당안관 소장 당안</div>
+        <div class="card-title-cn">第一歷史檔案館藏清代檔案</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">중국 제1역사당안관 소장 미출판 만·한문 주접, 제본 등 수록. 당안 번호와 제목만 제공됩니다.</p>
+        <div class="card-stats">
+          <div class="stat">
+            <span class="stat-num">—</span>
+            <span class="stat-label">문건</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">—</span>
+            <span class="stat-label">번역 완료</span>
+          </div>
+        </div>
+        <span class="card-arrow">열람하기 →</span>
+      </div>
+    </a>
 
-  <!-- 태그 필터 바 -->
-  <div class="tag-filter-bar empty" id="tag-filter-bar">
-    <span class="tag-filter-label">태그 필터 (AND):</span>
-    <span id="tag-filter-chips"></span>
-    <span class="tag-filter-clear" onclick="clearTagFilter()">✕ 필터 초기화</span>
-  </div>
+    <a class="collection-card card-shared" href="collection.html?col=published">
+      <div class="card-header">
+        <span class="card-badge">👥 제한 공유</span>
+        <div class="card-title">영인 출판 당안 자료</div>
+        <div class="card-title-cn">影印出版清代檔案</div>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">온라인 게재 혹은 영인 출판된 당안 자료.</p>
+        <div class="card-stats">
+          <div class="stat">
+            <span class="stat-num">—</span>
+            <span class="stat-label">문건</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">—</span>
+            <span class="stat-label">번역 완료</span>
+          </div>
+        </div>
+        <span class="card-arrow">열람하기 →</span>
+      </div>
+    </a>
 
-  <!-- 알림 -->
-  <div class="notice" id="notice"></div>
-
-  <!-- 툴바 -->
-  <div class="toolbar">
-    <div class="search-bar">
-      <input type="text" class="search-input" id="search-input"
-        placeholder="당안번호, 제목, 발송자, 날짜, 요약 검색… (전문 검색은 우측 버튼)">
-      <button class="btn btn-search" onclick="applyFilters()">검색</button>
-    </div>
-    <button class="btn btn-add" onclick="openAddModal()">＋ 새 문건 추가</button>
-    <button class="fulltext-toggle" id="fulltext-btn" onclick="toggleFulltext()" title="원문·번역 전문 검색">
-      <span class="ft-dot"></span>전문 검색
-    </button>
-    <span class="fulltext-loading" id="fulltext-loading">색인 로딩 중…</span>
-  </div>
-
-  <!-- 결과 요약 -->
-  <div class="result-summary" id="result-summary"></div>
-
-  <!-- 테이블 -->
-  <table class="doc-table">
-    <thead>
-      <tr>
-        <th onclick="sortBy('jongwon')">전종</th>
-        <th onclick="sortBy('id')">당안번호</th>
-        <th onclick="sortBy('position')">발송자 관직</th>
-        <th onclick="sortBy('author')">발송자 이름</th>
-        <th onclick="sortBy('title')">제목</th>
-        <th onclick="sortBy('date')">날짜</th>
-        <th class="no-sort">태그</th>
-        <th class="no-sort">작업상태</th>
-        <th class="no-sort">관리</th>
-      </tr>
-    </thead>
-    <tbody id="doc-tbody"></tbody>
-  </table>
-
-  <div class="empty-state" id="empty-state">
-    등록된 문건이 없습니다 — [＋ 새 문건 추가]로 시작하세요
   </div>
 
 </main>
 
 <footer>
-  mucenfere 당안 열람실 · Personal Historical Archive · 私人檔案閱覽室
+  mucenfere 당안 자료고 · Personal Historical Archive · 私人檔案資料庫
 </footer>
 
-<!-- ── 추가/수정 모달 ── -->
-<div class="modal-overlay" id="doc-modal">
+<!-- ── 설정 모달 ── -->
+<div class="modal-overlay" id="settings-modal">
   <div class="modal">
-    <h2 id="modal-title">새 문건 추가</h2>
-
-    <input type="hidden" id="f-internal-id">
-    <div class="form-row">
-      <div class="form-group">
-        <label>당안번호</label>
-        <input type="text" id="f-id" placeholder="예: 04-02-002-000038-0023 (선택사항)">
-      </div>
-      <div class="form-group">
-        <label>전종 (全宗) *</label>
-        <select id="f-jongwon">
-          <option value="02">02 — 궁중당 (宮中檔)</option>
-          <option value="02r">02 — 청실록 (淸實錄)</option>
-          <option value="03">03 — 군기처 (軍機處)</option>
-          <option value="04" selected>04 — 주비주접 (硃批奏摺)</option>
-          <option value="05">05 — 내무부 (內務府)</option>
-          <option value="etc">기타</option>
-        </select>
-      </div>
-    </div>
+    <h2>GitHub 연결 설정</h2>
+    <p class="modal-subtitle">
+      GitHub Personal Access Token을 입력하면 문건 추가·수정 내용이 저장소에 자동으로 저장됩니다.<br>
+      토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다.
+    </p>
 
     <div class="form-group">
-      <label>제목</label>
-      <input type="text" id="f-title" placeholder="문건 제목 또는 내용 요약 제목">
+      <label>Personal Access Token</label>
+      <input type="password" id="f-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <p class="form-hint">
+        <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank">GitHub → Settings → Developer settings → Personal access tokens</a>에서 발급.<br>
+        권한: <strong>repo</strong> (읽기/쓰기) 체크.
+      </p>
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label>날짜</label>
-        <input type="text" id="f-date" placeholder="예: 康熙五十一年六月十三日">
+        <label>소유자 (Owner)</label>
+        <input type="text" id="f-owner" placeholder="mucenfere">
       </div>
       <div class="form-group">
-        <label>전사 날짜</label>
-        <input type="text" id="f-transcribed" placeholder="예: 20240308">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>발송자 관직</label>
-        <input type="text" id="f-position" placeholder="예: 성경장군">
-      </div>
-      <div class="form-group">
-        <label>발송자 이름</label>
-        <input type="text" id="f-author" placeholder="예: 唐保住 (tangbooju)">
+        <label>저장소 (Repository)</label>
+        <input type="text" id="f-repo" placeholder="manchu_dangse">
       </div>
     </div>
 
     <div class="form-group">
-      <label>요약</label>
-      <textarea id="f-summary" placeholder="문건 내용 간략 요약 (선택)"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>작업상태</label>
-      <input type="text" id="f-translated" placeholder="예: 완료 / 번역중 / 초벌번역">
-    </div>
-
-    <div class="form-group">
-      <label>태그</label>
-      <div class="tag-input-wrap" id="tag-input-wrap">
-        <input type="text" class="tag-raw-input" id="tag-raw-input"
-          placeholder="태그 입력 후 Enter (예: 성경, 카룬, 군정)"
-          onkeydown="handleTagInput(event)">
-      </div>
+      <label>브랜치 (Branch)</label>
+      <input type="text" id="f-branch" placeholder="main">
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-delete" id="btn-delete" style="display:none" onclick="deleteDoc()">삭제</button>
-      <div style="display:flex;gap:8px;margin-left:auto">
-        <button class="btn btn-cancel" onclick="closeModal()">취소</button>
-        <button class="btn btn-save" onclick="saveDoc()">저장</button>
+      <button class="btn-clear" onclick="clearSettings()">설정 초기화</button>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <span class="conn-status" id="conn-status">
+          <span class="conn-dot disconnected" id="modal-dot"></span>
+          미연결
+        </span>
+        <button class="btn btn-cancel" onclick="closeSettings()">취소</button>
+        <button class="btn btn-save" onclick="saveSettings()">저장</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ── 전종 정의 ──────────────────────────────────────────
-const JONGWON = {
-  '02': { name: '궁중당',   cn: '宮中檔' },
-  '02r': { name: '청실록',   cn: '淸實錄' },
-  '03': { name: '군기처',   cn: '軍機處' },
-  '04': { name: '주비주접', cn: '硃批奏摺' },
-  '05': { name: '내무부',   cn: '內務府' },
-};
-
-function getJongwonInfo(code) { return JONGWON[code] || { name: code, cn: '' }; }
-function getJongwonBadgeClass(code) {
-  return { '02':'j-02','02r':'j-02r','03':'j-03','04':'j-04','05':'j-05' }[code] || 'j-etc';
+// ── 설정 로드 ───────────────────────────────────────────
+function loadSettings() {
+  document.getElementById('f-token').value  = localStorage.getItem('gh_token')  || '';
+  document.getElementById('f-owner').value  = localStorage.getItem('gh_owner')  || '';
+  document.getElementById('f-repo').value   = localStorage.getItem('gh_repo')   || '';
+  document.getElementById('f-branch').value = localStorage.getItem('gh_branch') || 'main';
+  updateConnStatus();
 }
 
-// ── GitHub 설정 (localStorage) ─────────────────────────
-function ghConfig() {
-  return {
-    token:  localStorage.getItem('gh_token')  || '',
-    owner:  localStorage.getItem('gh_owner')  || '',
-    repo:   localStorage.getItem('gh_repo')   || '',
-    branch: localStorage.getItem('gh_branch') || 'main',
-  };
-}
+function updateConnStatus() {
+  const token = localStorage.getItem('gh_token');
+  const owner = localStorage.getItem('gh_owner');
+  const repo  = localStorage.getItem('gh_repo');
+  const connected = !!(token && owner && repo);
 
-// ── 상태 ───────────────────────────────────────────────
-let docs = [];          // 현재 로드된 문건 목록
-let activeJongwon = 'all';
-let searchQuery = '';
-let sortKey = 'id';
-let sortAsc = true;
-let editingId = null;   // 수정 중인 문건 ID (null이면 신규)
-let currentCol = 'archive';
-let activeTags = [];        // AND 필터 중인 태그 목록
-let fulltextMode = false;   // 전문 검색 모드
-let searchIndex  = null;    // search-index.json 캐시
-const shaCache   = {};       // 파일별 SHA 캐시
+  // 헤더 dot
+  const hDot = document.getElementById('header-dot');
+  hDot.className = 'conn-dot ' + (connected ? 'connected' : 'disconnected');
 
-// ── 초기화 ─────────────────────────────────────────────
-async function init() {
-  const params = new URLSearchParams(location.search);
-  currentCol = 'archive';
-
-  if (currentCol === 'archive') {
-    document.getElementById('col-label').textContent = '제1역사당안관 소장 당안';
-    document.getElementById('col-title').textContent = '제1역사당안관 소장 당안';
-    document.getElementById('col-title-cn').textContent = '第一歷史檔案館藏清代檔案';
-
-  } else {
-    document.getElementById('col-label').textContent = '영인 출판 당안 자료';
-    document.getElementById('col-title').textContent = '영인 출판 당안 자료';
-    document.getElementById('col-title-cn').textContent = '影印出版清代檔案';
-
+  // 모달 dot + 텍스트
+  const mDot   = document.getElementById('modal-dot');
+  const status = document.getElementById('conn-status');
+  if (mDot) {
+    mDot.className = 'conn-dot ' + (connected ? 'connected' : 'disconnected');
+    status.lastChild.textContent = connected
+      ? ` 연결됨 — ${owner}/${repo}`
+      : ' 미연결';
   }
-
-  await loadDocs();
-
-  document.getElementById('search-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') applyFilters();
-  });
-}
-
-// ── 문건 목록 로드 (GitHub API) ────────────────────────
-async function loadDocs() {
-  const cfg = ghConfig();
-  if (!cfg.token || !cfg.owner || !cfg.repo) {
-    docs = [];
-    renderTabs();
-    applyFilters();
-    return;
-  }
-
-  const path = `data/${currentCol}/index.json`;
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
-
-  try {
-    const res = await fetch(url, {
-      headers: { 'Authorization': `token ${cfg.token}` }
-    });
-    if (res.status === 404) {
-      docs = [];
-    } else if (res.ok) {
-      const data = await res.json();
-      shaCache[path] = data.sha;   // SHA 캐시
-      const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
-      docs = JSON.parse(content);
-    }
-  } catch(e) {
-    docs = [];
-  }
-
-  renderTabs();
-  applyFilters();
-}
-
-// ── 전종 탭 렌더 ───────────────────────────────────────
-function renderTabs() {
-  const counts = {};
-  docs.forEach(d => { counts[d.jongwon] = (counts[d.jongwon] || 0) + 1; });
-
-  const container = document.getElementById('jongwon-tabs');
-  let html = `
-    <div class="j-tab ${activeJongwon==='all'?'active':''}" onclick="setJongwon('all')">
-      전체 <span class="tab-count">${docs.length}</span>
-    </div>`;
-
-  Object.entries(JONGWON).forEach(([code, info]) => {
-    if (!counts[code]) return;
-    html += `
-      <div class="j-tab ${activeJongwon===code?'active':''}" onclick="setJongwon('${code}')">
-        ${code}- ${info.name} <span class="tab-count">${counts[code]}</span>
-      </div>`;
-  });
-
-  container.innerHTML = html;
-  renderTagPalette();
-}
-
-// ── 필터 & 렌더 ────────────────────────────────────────
-function applyFilters() {
-  searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
-
-  let filtered = [...docs];
-
-  if (activeJongwon !== 'all')
-    filtered = filtered.filter(d => d.jongwon === activeJongwon);
-
-  // 태그 AND 필터
-  if (activeTags.length > 0)
-    filtered = filtered.filter(d =>
-      activeTags.every(at => (d.tags||[]).includes(at))
-    );
-
-  if (searchQuery) {
-    if (fulltextMode && searchIndex) {
-      // 전문 검색: search-index에서 매칭된 id만 허용
-      const matchedIds = new Set(
-        searchIndex
-          .filter(e => e.text.toLowerCase().includes(searchQuery))
-          .map(e => e.id)
-      );
-      filtered = filtered.filter(d => matchedIds.has(d.id));
-    } else {
-      // 메타데이터 검색 (기본)
-      filtered = filtered.filter(d =>
-        (d.id       ||'').toLowerCase().includes(searchQuery) ||
-        (d.title    ||'').toLowerCase().includes(searchQuery) ||
-        (d.author   ||'').toLowerCase().includes(searchQuery) ||
-        (d.position ||'').toLowerCase().includes(searchQuery) ||
-        (d.date     ||'').toLowerCase().includes(searchQuery) ||
-        (d.summary  ||'').toLowerCase().includes(searchQuery) ||
-        (d.tags||[]).some(t => t.toLowerCase().includes(searchQuery))
-      );
-    }
-  }
-
-  filtered.sort((a, b) => {
-    let va = a[sortKey]||'', vb = b[sortKey]||'';
-    return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-  });
-
-  renderTable(filtered);
-}
-
-function renderTable(filtered) {
-  const tbody  = document.getElementById('doc-tbody');
-  const empty  = document.getElementById('empty-state');
-  const summary= document.getElementById('result-summary');
-
-  summary.innerHTML = `총 <strong>${filtered.length}</strong>건`;
-
-  if (filtered.length === 0) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-
-  tbody.innerHTML = filtered.map(doc => {
-    const jInfo = getJongwonInfo(doc.jongwon);
-    const jCls  = getJongwonBadgeClass(doc.jongwon);
-    return `
-      <tr>
-        <td><span class="jongwon-badge ${jCls}">${doc.jongwon}- ${jInfo.name}</span></td>
-        <td class="td-id td-title" onclick="openDoc('${doc.internalId || doc.id}')">${hl(doc.id)}</td>
-        <td class="td-position">${hl(doc.position||'')}</td>
-        <td class="td-author-name">${hl(doc.author||'')}</td>
-        <td>
-          <div class="td-title" onclick="openDoc('${doc.internalId || doc.id}')">${hl(doc.title)}</div>
-          <div class="td-summary">${hl(doc.summary||'')}</div>
-        </td>
-        <td class="td-date">${doc.date||''}</td>
-        <td>
-          <div class="tag-list">${[...(doc.tags||[])].sort((a,b)=>a.localeCompare(b,'ko')).map(t=>`<span class="tag" onclick="filterByTag('${t}')">${t}</span>`).join('')}</div>
-        </td>
-        <td class="td-trans ${doc.translated === '완료' ? 'done' : ''}">${doc.translated || '번역중'}</td>
-        <td>
-          <button class="btn btn-cancel" style="padding:6px 14px;font-size:1.01rem"
-            onclick="openEditModal('${doc.internalId || doc.id}')">수정</button>
-        </td>
-      </tr>`;
-  }).join('');
-}
-
-function hl(text) {
-  if (!searchQuery || !text) return text||'';
-  const re = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
-  return text.replace(re, '<mark>$1</mark>');
 }
 
 // ── 모달 열기/닫기 ─────────────────────────────────────
-function openAddModal() {
-  editingId = null;
-  document.getElementById('modal-title').textContent = '새 문건 추가';
-  document.getElementById('btn-delete').style.display = 'none';
-  ['f-id','f-title','f-date','f-transcribed','f-position','f-author','f-summary','f-translated']
-    .forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-internal-id').value = '';
-  document.getElementById('f-jongwon').value = '04';
-  document.getElementById('f-id').disabled = false;
-  renderTagChips([]);
-  document.getElementById('doc-modal').classList.add('open');
+function openSettings() {
+  loadSettings();
+  document.getElementById('settings-modal').classList.add('open');
 }
 
-function openEditModal(id) {
-  const doc = docs.find(d => d.id === id);
-  if (!doc) return;
-  editingId = doc.internalId || doc.filename || doc.id;
-  document.getElementById('modal-title').textContent = '문건 수정';
-  document.getElementById('btn-delete').style.display = 'block';
-  document.getElementById('f-id').value          = doc.id || '';
-  document.getElementById('f-id').disabled       = false;
-  document.getElementById('f-internal-id').value = doc.internalId || doc.filename || '';
-  document.getElementById('f-jongwon').value     = doc.jongwon || '04';
-  document.getElementById('f-title').value       = doc.title || '';
-  document.getElementById('f-date').value        = doc.date || '';
-  document.getElementById('f-transcribed').value = doc.transcribed || '';
-  document.getElementById('f-position').value    = doc.position || '';
-  document.getElementById('f-author').value      = doc.author || '';
-  document.getElementById('f-summary').value     = doc.summary || '';
-  document.getElementById('f-translated').value = doc.translated || '';
-  renderTagChips(doc.tags || []);
-  document.getElementById('doc-modal').classList.add('open');
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('open');
 }
 
-function closeModal() {
-  document.getElementById('doc-modal').classList.remove('open');
-}
+// 모달 바깥 클릭 시 닫기
+document.getElementById('settings-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSettings();
+});
 
 // ── 저장 ───────────────────────────────────────────────
-async function saveDoc() {
-  const displayId  = document.getElementById('f-id').value.trim();
-  const internalId = document.getElementById('f-internal-id').value.trim() || generateInternalId();
-  const id = internalId;  // 파일 기준 키는 내부 ID
-  if (!internalId) { alert('내부 ID 생성 실패. 다시 시도해주세요.'); return; }
+function saveSettings() {
+  const token  = document.getElementById('f-token').value.trim();
+  const owner  = document.getElementById('f-owner').value.trim();
+  const repo   = document.getElementById('f-repo').value.trim();
+  const branch = document.getElementById('f-branch').value.trim() || 'main';
 
-  const docData = {
-    id:          displayId || internalId,  // 표시용 당안번호 (없으면 내부 ID)
-    internalId:  internalId,               // 파일명 기준 내부 ID
-    jongwon:     document.getElementById('f-jongwon').value,
-    title:       document.getElementById('f-title').value.trim(),
-    date:        document.getElementById('f-date').value.trim(),
-    transcribed: document.getElementById('f-transcribed').value.trim(),
-    position:    document.getElementById('f-position').value.trim(),
-    author:      document.getElementById('f-author').value.trim(),
-    summary:     document.getElementById('f-summary').value.trim(),
-    translated:  document.getElementById('f-translated').value.trim(),
-    tags:        getCurrentTags(),
-    filename:    internalId.replace(/[^a-zA-Z0-9\-]/g, '-') + '.json',
-  };
-
-  if (!editingId) {
-    docs.push(docData);
-  } else {
-    const idx = docs.findIndex(d => (d.internalId || d.filename || d.id) === editingId);
-    if (idx !== -1) docs[idx] = { ...docs[idx], ...docData };
-    else docs.push(docData);
-  }
-
-  closeModal();
-  renderTabs();
-  applyFilters();
-
-  const cfg = ghConfig();
-  if (cfg.token && cfg.owner && cfg.repo) {
-    showNotice('saving', '저장 중…');
-    try {
-      // 1) 개별 문건 파일 생성 (신규만)
-      if (!editingId) {
-        const emptyDoc = { ...docData, original: '', translation: '' };
-        await ghPut(
-          `data/${currentCol}/${docData.filename}`,
-          JSON.stringify(emptyDoc, null, 2),
-          `Add ${id}`
-        );
-      }
-      // 2) index.json 업데이트
-      await ghPut(
-        `data/${currentCol}/index.json`,
-        JSON.stringify(docs, null, 2),
-        `Update index: ${editingId ? 'edit' : 'add'} ${id}`
-      );
-      showNotice('success', `✓ GitHub에 저장되었습니다 — ${id}`);
-    } catch(e) {
-      showNotice('error', '저장 실패: ' + e.message);
-    }
-  } else {
-    showNotice('saving', 'GitHub 미연결 — index.html 설정에서 토큰을 입력하면 실제 저장됩니다');
-  }
-}
-
-// ── 삭제 ───────────────────────────────────────────────
-async function deleteDoc() {
-  if (!editingId) return;
-  if (!confirm(`[${editingId}] 문건을 삭제하시겠습니까?`)) return;
-
-  docs = docs.filter(d => (d.internalId || d.filename || d.id) !== editingId);
-  closeModal();
-  renderTabs();
-  applyFilters();
-
-  const cfg = ghConfig();
-  if (cfg.token && cfg.owner && cfg.repo) {
-    showNotice('saving', '삭제 중…');
-    try {
-      await ghPut(
-        `data/${currentCol}/index.json`,
-        JSON.stringify(docs, null, 2),
-        `Delete ${editingId} from index`
-      );
-      showNotice('success', `✓ 삭제되었습니다 — ${editingId}`);
-    } catch(e) {
-      showNotice('error', '삭제 실패: ' + e.message);
-    }
-  }
-}
-
-// ── GitHub API PUT ─────────────────────────────────────
-async function ghPut(path, content, message) {
-  const cfg = ghConfig();
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
-  const headers = {
-    'Authorization': `token ${cfg.token}`,
-    'Content-Type': 'application/json'
-  };
-  const encoded = btoa(unescape(encodeURIComponent(content)));
-
-  // 캐시된 SHA 사용, 없으면 GET으로 가져오기
-  let sha = shaCache[path];
-  if (!sha) {
-    try {
-      const r = await fetch(url, { headers });
-      if (r.ok) { const d = await r.json(); sha = d.sha; shaCache[path] = sha; }
-    } catch(e) {}
-  }
-
-  const res = await fetch(url, {
-    method: 'PUT', headers,
-    body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha ? { sha } : {}) })
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    // SHA 불일치 → 캐시 무효화 후 재시도
-    if (err.message && err.message.includes('does not match')) {
-      delete shaCache[path];
-      try {
-        const r2 = await fetch(url, { headers });
-        if (r2.ok) { const d2 = await r2.json(); shaCache[path] = d2.sha; }
-      } catch(e) {}
-      const sha2 = shaCache[path];
-      const res2 = await fetch(url, {
-        method: 'PUT', headers,
-        body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha2 ? { sha: sha2 } : {}) })
-      });
-      if (!res2.ok) {
-        const err2 = await res2.json();
-        throw new Error(err2.message || res2.status);
-      }
-      // 성공 시 새 SHA 갱신
-      const result2 = await res2.json();
-      if (result2.content?.sha) shaCache[path] = result2.content.sha;
-      return;
-    }
-    throw new Error(err.message || res.status);
-  }
-
-  // 성공 시 SHA 갱신
-  try {
-    const result = await res.json();
-    if (result.content?.sha) shaCache[path] = result.content.sha;
-  } catch(e) {}
-}
-
-
-
-// ── 내부 ID 자동 생성 ──────────────────────────────────
-function generateInternalId() {
-  // 현재 밀리초 타임스탬프 기반 — 중복 불가
-  return 'arc-' + Date.now();
-}
-
-// ── 태그 입력 관리 ─────────────────────────────────────
-let currentTags = [];
-
-function renderTagChips(tags) {
-  currentTags = [...tags];
-  const wrap = document.getElementById('tag-input-wrap');
-  // 기존 칩 제거
-  wrap.querySelectorAll('.tag-chip').forEach(el => el.remove());
-  const input = document.getElementById('tag-raw-input');
-  currentTags.forEach(tag => {
-    const chip = document.createElement('span');
-    chip.className = 'tag-chip';
-    chip.innerHTML = `${tag}<button type="button" onclick="removeTag('${tag}')">×</button>`;
-    wrap.insertBefore(chip, input);
-  });
-}
-
-function handleTagInput(e) {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault();
-    const val = document.getElementById('tag-raw-input').value.trim();
-    if (val && !currentTags.includes(val)) {
-      currentTags.push(val);
-      renderTagChips(currentTags);
-    }
-    document.getElementById('tag-raw-input').value = '';
-  } else if (e.key === 'Backspace' && document.getElementById('tag-raw-input').value === '') {
-    currentTags.pop();
-    renderTagChips(currentTags);
-  }
-}
-
-function removeTag(tag) {
-  currentTags = currentTags.filter(t => t !== tag);
-  renderTagChips(currentTags);
-}
-
-function getCurrentTags() { return [...currentTags]; }
-
-function filterByTag(tag) {
-  if (!activeTags.includes(tag)) {
-    activeTags.push(tag);
-  } else {
-    activeTags = activeTags.filter(t => t !== tag);
-  }
-  updateTagFilterBar();
-  renderTagPalette();
-  renderTable_refresh();
-  applyFilters();
-}
-
-function updateTagFilterBar() {
-  const bar   = document.getElementById('tag-filter-bar');
-  const chips = document.getElementById('tag-filter-chips');
-
-  if (activeTags.length === 0) {
-    bar.classList.add('empty');
-    chips.innerHTML = '';
+  if (!token || !owner || !repo) {
+    alert('Token, Owner, Repository는 모두 필수입니다.');
     return;
   }
 
-  bar.classList.remove('empty');
-  chips.innerHTML = activeTags.map(t =>
-    `<span class="tag active-filter" onclick="filterByTag('${t}')">${t} ✕</span>`
-  ).join('');
+  localStorage.setItem('gh_token',  token);
+  localStorage.setItem('gh_owner',  owner);
+  localStorage.setItem('gh_repo',   repo);
+  localStorage.setItem('gh_branch', branch);
+
+  updateConnStatus();
+  closeSettings();
 }
 
-function renderTable_refresh() {
-  // 테이블의 태그 칩 active 상태 갱신
-  document.querySelectorAll('.tag-list .tag').forEach(el => {
-    const tag = el.textContent;
-    el.classList.toggle('active-filter', activeTags.includes(tag));
-  });
+// ── 초기화 ─────────────────────────────────────────────
+function clearSettings() {
+  if (!confirm('GitHub 연결 설정을 초기화하시겠습니까?')) return;
+  ['gh_token','gh_owner','gh_repo','gh_branch'].forEach(k => localStorage.removeItem(k));
+  loadSettings();
 }
 
-function clearTagFilter() {
-  activeTags = [];
-  updateTagFilterBar();
-  renderTagPalette();
-  applyFilters();
-}
-
-// ── 태그 검색 포함 ─────────────────────────────────────
-
-
-// ── 전문 검색 ───────────────────────────────────────────
-async function toggleFulltext() {
-  fulltextMode = !fulltextMode;
-  const btn = document.getElementById('fulltext-btn');
-  btn.classList.toggle('active', fulltextMode);
-
-  if (fulltextMode && !searchIndex) {
-    await loadSearchIndex();
-  }
-  applyFilters();
-}
-
-async function loadSearchIndex() {
-  const cfg = ghConfig();
-  if (!cfg.token || !cfg.owner || !cfg.repo) return;
-
-  const loading = document.getElementById('fulltext-loading');
-  loading.classList.add('show');
-
-  try {
-    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data/${currentCol}/search-index.json`;
-    const res = await fetch(url, { headers: { 'Authorization': `token ${cfg.token}` } });
-    if (res.ok) {
-      const data = await res.json();
-      const raw = Uint8Array.from(atob(data.content.replace(/\n/g,'')), c => c.charCodeAt(0));
-      searchIndex = JSON.parse(new TextDecoder('utf-8').decode(raw));
-    } else {
-      searchIndex = [];
-      showNotice('error', '전문 색인 없음 — viewer에서 문건을 저장하면 자동 생성됩니다');
-    }
-  } catch(e) {
-    searchIndex = [];
-  } finally {
-    loading.classList.remove('show');
-  }
-}
-
-
-
-// ── 태그 팔레트 렌더 ───────────────────────────────────
-function renderTagPalette() {
-  // 전체 문건에서 태그 수집 → 가나다/ABC 정렬
-  const tagCount = {};
-  docs.forEach(d => {
-    (d.tags || []).forEach(t => {
-      tagCount[t] = (tagCount[t] || 0) + 1;
-    });
-  });
-
-  const allTags = Object.keys(tagCount).sort((a, b) => a.localeCompare(b, 'ko'));
-  const palette = document.getElementById('tag-palette');
-
-  if (allTags.length === 0) {
-    palette.classList.add('empty');
-    return;
-  }
-
-  palette.classList.remove('empty');
-  const label = '<span class="tag-palette-label">Tags</span>';
-  const chips = allTags.map(t => {
-    const isActive = activeTags.includes(t);
-    return `<span class="tag ${isActive ? 'active-filter' : ''}"
-      onclick="filterByTag('${t}')"
-      title="${tagCount[t]}건"
-    >${t}<span style="font-size:0.75em;opacity:0.7;margin-left:3px;">${tagCount[t]}</span></span>`;
-  }).join('');
-  palette.innerHTML = label + chips;
-}
-
-// ── 알림 ───────────────────────────────────────────────
-let noticeTimer;
-function showNotice(type, msg) {
-  const el = document.getElementById('notice');
-  el.className = `notice ${type} show`;
-  el.textContent = msg;
-  clearTimeout(noticeTimer);
-  if (type === 'success') {
-    noticeTimer = setTimeout(() => el.classList.remove('show'), 4000);
-  }
-}
-
-// ── 유틸 ───────────────────────────────────────────────
-function setJongwon(code) { activeJongwon = code; renderTabs(); applyFilters(); }
-
-function sortBy(key) {
-  if (sortKey === key) sortAsc = !sortAsc;
-  else { sortKey = key; sortAsc = true; }
-  applyFilters();
-}
-
-function openDoc(id) {
-  // id는 doc.internalId || doc.id
-  location.href = `viewer.html?id=${encodeURIComponent(id)}`;
-}
-
-init();
+// 페이지 로드 시 연결 상태 반영
+updateConnStatus();
 </script>
+
 </body>
 </html>
