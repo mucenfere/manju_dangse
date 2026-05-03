@@ -489,14 +489,14 @@ async function loadDoc(docId) {
       const indexData = await indexRes.json();
       const indexRaw = Uint8Array.from(atob(indexData.content.replace(/\n/g, '')), c => c.charCodeAt(0));
       const indexContent = JSON.parse(new TextDecoder('utf-8').decode(indexRaw));
-      const meta = indexContent.find(d => d.id === docId);
+      const meta = indexContent.find(d => (d.internalId || d.filename?.replace('.json','') || d.id) === docId || d.id === docId);
       if (meta) renderMeta(meta);
     }
   } catch(e) {}
 
   // 개별 문건 파일 로드
   try {
-    const filename = docId.replace(/[^a-zA-Z0-9\-]/g, '-') + '.json';
+    const filename = docId.replace(/[^a-zA-Z0-9\-]/g, '-') + '.json';  // docId가 이미 internalId 기반
     const fileUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/data/${currentCol}/${filename}`;
     const fileRes = await fetch(fileUrl, {
       headers: { 'Authorization': `token ${cfg.token}` }
@@ -632,7 +632,9 @@ async function ghPut(path, content, message, sha) {
     'Authorization': `token ${cfg.token}`,
     'Content-Type': 'application/json'
   };
+  const encoded = btoa(unescape(encodeURIComponent(content)));
 
+  // SHA 없으면 최신 SHA 가져오기
   if (!sha) {
     try {
       const r = await fetch(url, { headers });
@@ -640,16 +642,32 @@ async function ghPut(path, content, message, sha) {
     } catch(e) {}
   }
 
-  const body = {
-    message,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch: cfg.branch
-  };
-  if (sha) body.sha = sha;
+  const res = await fetch(url, {
+    method: 'PUT', headers,
+    body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha ? { sha } : {}) })
+  });
 
-  const res = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(body) });
   if (!res.ok) {
     const err = await res.json();
+    // SHA 불일치 → 최신 SHA 재취득 후 한 번 더 시도
+    if (err.message && err.message.includes('does not match')) {
+      let sha2;
+      try {
+        const r2 = await fetch(url, { headers });
+        if (r2.ok) { const d2 = await r2.json(); sha2 = d2.sha; }
+      } catch(e) {}
+      const res2 = await fetch(url, {
+        method: 'PUT', headers,
+        body: JSON.stringify({ message, content: encoded, branch: cfg.branch, ...(sha2 ? { sha: sha2 } : {}) })
+      });
+      if (!res2.ok) {
+        const err2 = await res2.json();
+        throw new Error(err2.message || res2.status);
+      }
+      const result2 = await res2.json();
+      if (currentDoc) currentDoc._sha = result2.content?.sha;
+      return;
+    }
     throw new Error(err.message || res.status);
   }
 
