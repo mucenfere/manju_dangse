@@ -295,5 +295,21 @@
       "봉금"
     ],
     "filename": "arc-20260503-213004.json"
+  },
+  {
+    "id": "청고종실록_권115",
+    "internalId": "arc-20260503-213209",
+    "jongwon": "02r",
+    "title": "",
+    "date": "乾隆06年09月06日",
+    "transcribed": "",
+    "position": "議政大臣",
+    "author": "廣祿/guwang lu",
+    "summary": "○ 의정대신 유친왕 광록이 성지를 받들어 의논하고 복주하였다. 영고탑장군 악미달이 아뢰어 말하였다.",
+    "translated": "완료",
+    "tags": [
+      "봉금"
+    ],
+    "filename": "arc-20260503-213209.json"
   }
 ]
