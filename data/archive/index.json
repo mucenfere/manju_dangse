@@ -441,5 +441,22 @@
       "영길주"
     ],
     "filename": "arc-20260503-231351.json"
+  },
+  {
+    "id": "04-02-002-000237-0029",
+    "internalId": "arc-20260503-231953",
+    "jongwon": "04",
+    "title": "",
+    "date": "乾隆04年10月27日",
+    "transcribed": "",
+    "position": "성경장군",
+    "author": "额尔图等(ertu)",
+    "summary": "봉천장군 어르투의 몰래 인삼 캐다 잡힌 무리들을 체포한 상황 보고",
+    "translated": "완료",
+    "tags": [
+      "사삼",
+      "인삼"
+    ],
+    "filename": "arc-20260503-231953.json"
   }
 ]
