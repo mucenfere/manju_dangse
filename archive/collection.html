@@ -85,9 +85,9 @@
 
   /* ── MAIN ── */
   main {
-    max-width: 1540px;            /* 1100×1.4 */
+    max-width: 1800px;
     margin: 0 auto;
-    padding: 39px 67px 112px;    /* 28×1.4  48×1.4  80×1.4 */
+    padding: 39px 48px 112px;    /* 28×1.4  48×1.4  80×1.4 */
     animation: fadeUp 0.4s ease both;
   }
 
@@ -525,7 +525,7 @@
         <th onclick="sortBy('title')">제목</th>
         <th onclick="sortBy('date')">날짜</th>
         <th class="no-sort">태그</th>
-        <th class="no-sort">번역</th>
+        <th class="no-sort">작업상태</th>
         <th class="no-sort">관리</th>
       </tr>
     </thead>
@@ -597,7 +597,7 @@
     </div>
 
     <div class="form-group">
-      <label>번역 상태</label>
+      <label>작업상태</label>
       <input type="text" id="f-translated" placeholder="예: 완료 / 번역중 / 초벌번역">
     </div>
 
