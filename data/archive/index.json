@@ -150,5 +150,20 @@
       "영길주"
     ],
     "filename": "04-02-002-000251-0022.json"
+  },
+  {
+    "id": "청고종실록115",
+    "jongwon": "04",
+    "title": "",
+    "date": "乾隆5年4月24日",
+    "transcribed": "",
+    "position": "",
+    "author": "",
+    "summary": "",
+    "translated": "완료",
+    "tags": [
+      "봉금"
+    ],
+    "filename": "-----115.json"
   }
 ]
