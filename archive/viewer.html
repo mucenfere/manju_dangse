@@ -31,13 +31,28 @@
     background: var(--bg);
     color: var(--ink);
   }
-  
+
   /* ── HEADER ── */
   header {
-    background: var(--header-bg);
-    border-bottom: 3px solid var(--gold);
-    padding: 18px 40px;
+    background: #e8dcc8;
+    border-bottom: 4px solid var(--gold);
+    padding: 28px 48px 22px;
     flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent, transparent 84px,
+      rgba(255,255,255,0.015) 84px,
+      rgba(255,255,255,0.015) 85px
+    );
+    pointer-events: none;
   }
 
   .header-inner {
