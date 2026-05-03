@@ -47,7 +47,6 @@
     "author": "蕴著(yunju)",
     "summary": "",
     "tags": [
-      "새우",
       "바다",
       "성경",
       "어업"
@@ -114,12 +113,13 @@
     "date": "乾隆02年05月07日",
     "transcribed": "",
     "position": "길림장군",
-    "author": "吉党阿等(gidangga)",
+    "author": "吉党阿等/gidangga/",
     "summary": "",
     "tags": [
       "영길주"
     ],
-    "filename": "04-02-002-000221-0020.json"
+    "filename": "04-02-002-000221-0020.json",
+    "translated": "완료"
   },
   {
     "id": "04-02-002-000250-0014",
