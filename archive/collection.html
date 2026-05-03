@@ -864,7 +864,7 @@ function openAddModal() {
 }
 
 function openEditModal(id) {
-  const doc = docs.find(d => d.id === id);
+  const doc = docs.find(d => (d.internalId || d.filename?.replace('.json','') || d.id) === id) || docs.find(d => d.id === id);
   if (!doc) return;
   editingId = doc.internalId || doc.filename || doc.id;
   document.getElementById('modal-title').textContent = '문건 수정';
